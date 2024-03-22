@@ -1,12 +1,14 @@
 ﻿using UserManagement.Models;
+using UserManagement.Models.DTO;
 
 namespace UserManagement.Interface.ServiceInterface
 {
     public interface IUserManagementService
     {
-        public Task<User> Login(User user);
-        public Task<User> Resgister(User user);
-        public Task<User> UpdateUser(User user);
+        public Task<LoginDTO> Login(LoginDTO loginDTO);
+        public Task<RegisterDTO> Resgister(RegisterDTO registerDTO);
+        public Task<UpdateUserDTO> UpdateUser(UpdateUserDTO updateUserDTO);
         public Task<User> UpdatePassword(User user);
+        public Task<User> DeleteUser(User user);
     }
 }

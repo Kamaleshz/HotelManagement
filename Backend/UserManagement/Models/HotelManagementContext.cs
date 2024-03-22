@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace UserManagement.Models;
 
-public partial class UserManagementContext : DbContext
+public partial class HotelManagementContext : DbContext
 {
-    public UserManagementContext()
+    public HotelManagementContext()
     {
     }
 
-    public UserManagementContext(DbContextOptions<UserManagementContext> options)
+    public HotelManagementContext(DbContextOptions<HotelManagementContext> options)
         : base(options)
     {
     }
@@ -32,8 +32,7 @@ public partial class UserManagementContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=KANINI-LTP-382;Database=hotelManagement;User Id=sa;Password=Admin@12345;Encrypt=False;TrustServerCertificate=true");
+        => optionsBuilder.UseSqlServer("Data Source=KANINI-LTP-382;Initial Catalog=hotelManagement;User ID=sa;Password=Admin@12345;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Intent=ReadWrite;Multi Subnet Failover=False");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -48,7 +47,7 @@ public partial class UserManagementContext : DbContext
 
         modelBuilder.Entity<Booking>(entity =>
         {
-            entity.HasKey(e => e.BookingId).HasName("PK__Booking__73951AEDF0F3A106");
+            entity.HasKey(e => e.BookingId).HasName("PK__Booking__73951AEDA381CBF4");
 
             entity.ToTable("Booking");
 
@@ -56,33 +55,35 @@ public partial class UserManagementContext : DbContext
             entity.Property(e => e.Checkout).HasColumnType("datetime");
             entity.Property(e => e.CreatedBy).HasMaxLength(100);
             entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+            entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
             entity.Property(e => e.ModifiedBy).HasMaxLength(100);
             entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
 
             entity.HasOne(d => d.Room).WithMany(p => p.Bookings)
                 .HasForeignKey(d => d.RoomId)
-                .HasConstraintName("FK__Booking__RoomId__48CFD27E");
+                .HasConstraintName("FK__Booking__RoomId__628FA481");
 
             entity.HasOne(d => d.User).WithMany(p => p.Bookings)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__Booking__UserId__49C3F6B7");
+                .HasConstraintName("FK__Booking__UserId__6383C8BA");
         });
 
         modelBuilder.Entity<FeedBack>(entity =>
         {
-            entity.HasKey(e => e.FeedBackId).HasName("PK__FeedBack__E2CB3B878147DD06");
+            entity.HasKey(e => e.FeedBackId).HasName("PK__FeedBack__E2CB3B8781E620D3");
 
             entity.ToTable("FeedBack");
 
             entity.Property(e => e.CreatedBy).HasMaxLength(50);
             entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+            entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
             entity.Property(e => e.ModifiedBy).HasMaxLength(50);
             entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
             entity.Property(e => e.Review).HasMaxLength(100);
 
             entity.HasOne(d => d.Booking).WithMany(p => p.FeedBacks)
                 .HasForeignKey(d => d.BookingId)
-                .HasConstraintName("FK__FeedBack__Bookin__4CA06362");
+                .HasConstraintName("FK__FeedBack__Bookin__66603565");
         });
 
         modelBuilder.Entity<Role>(entity =>
@@ -134,7 +135,7 @@ public partial class UserManagementContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__User__1788CC4C83D3812D");
+            entity.HasKey(e => e.UserId).HasName("PK__User__1788CC4C9FCAFE28");
 
             entity.ToTable("User");
 
@@ -145,6 +146,7 @@ public partial class UserManagementContext : DbContext
             entity.Property(e => e.FirstName)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
             entity.Property(e => e.LastName)
                 .HasMaxLength(50)
                 .IsUnicode(false);
@@ -161,7 +163,7 @@ public partial class UserManagementContext : DbContext
 
             entity.HasOne(d => d.UserRoleNavigation).WithMany(p => p.Users)
                 .HasForeignKey(d => d.UserRole)
-                .HasConstraintName("FK__User__UserRole__45F365D3");
+                .HasConstraintName("FK__User__UserRole__5FB337D6");
         });
 
         OnModelCreatingPartial(modelBuilder);

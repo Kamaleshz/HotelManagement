@@ -1,18 +1,45 @@
-﻿using UserManagement.Interface.RepositoryInterface.QueryInterface;
+﻿using Microsoft.EntityFrameworkCore;
+using UserManagement.Interface.RepositoryInterface.QueryInterface;
 using UserManagement.Models;
 
 namespace UserManagement.Repository.QueryRepository
 {
     public class QUserManagementRepository : IQUserManagementRepository
     {
-        public Task<ICollection<User>> GetAllUsers()
+        private readonly HotelManagementContext _context;
+
+        public QUserManagementRepository(HotelManagementContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+        public async Task<ICollection<User>> GetAllUsers()
+        {
+            try
+            {
+                var users = await _context.Users.ToListAsync();
+                if (users != null)
+                    return users;
+                throw new NullReferenceException("No record found");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error:" + ex.Message);
+            }
         }
 
-        public Task<ICollection<User>> GetUserById(int userId)
+        public async Task<User> GetUserById(int userId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == userId);
+                if (user != null)
+                    return user;
+                throw new NullReferenceException("No user found");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error:" + ex.Message);
+            }
         }
     }
 }

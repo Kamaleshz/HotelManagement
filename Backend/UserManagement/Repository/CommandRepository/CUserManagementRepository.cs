@@ -6,9 +6,9 @@ namespace UserManagement.Repository.CommandRepository
 {
     public class CUserManagementRepository : ICUserManagementRepository
     {
-        private readonly UserManagementContext _context;
+        private readonly HotelManagementContext _context;
 
-        public CUserManagementRepository(UserManagementContext context)
+        public CUserManagementRepository(HotelManagementContext context)
         {
             _context = context;
         }
@@ -22,7 +22,7 @@ namespace UserManagement.Repository.CommandRepository
             }
             catch (Exception ex)
             {
-                throw new Exception("Error:" +  ex.Message);
+                throw new Exception("Error:" + ex.Message);
             }
         }
 
@@ -38,7 +38,7 @@ namespace UserManagement.Repository.CommandRepository
                 }
                 return "User Deleted Successfully";
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception("Error:" + ex.Message);
             }
@@ -68,9 +68,9 @@ namespace UserManagement.Repository.CommandRepository
                 }
                 throw new NullReferenceException("No user found");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                throw new Exception("Error:" +  ex.Message);
+                throw new Exception("Error:" + ex.Message);
             }
         }
     }

@@ -15,7 +15,7 @@ public partial class User
 
     public string? UserPassword { get; set; }
 
-    public int? UserPhoneNumber { get; set; }
+    public long? UserPhoneNumber { get; set; }
 
     public int? UserRole { get; set; }
 
