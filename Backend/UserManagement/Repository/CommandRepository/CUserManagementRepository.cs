@@ -1,22 +1,31 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UserManagement.Interface.RepositoryInterface.CommandInterface;
 using UserManagement.Models;
+using UserManagement.Models.DTO;
+using UserManagement.Helper;
+using AutoMapper;
 
 namespace UserManagement.Repository.CommandRepository
 {
     public class CUserManagementRepository : ICUserManagementRepository
     {
         private readonly HotelManagementContext _context;
-
-        public CUserManagementRepository(HotelManagementContext context)
+        private IMapper _mapper;
+        public CUserManagementRepository(HotelManagementContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
-        public async Task<string> CreateUser(User user)
+        public async Task<string> CreateUser(UserDTO userDTO)
         {
             try
             {
-                _context.Users.Add(user);
+                var user = _mapper.Map<User>(userDTO);
+
+                TimeZoneInfo istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+                user.CreatedOn = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, istTimeZone);
+
+                await _context.Users.AddAsync(user);
                 await _context.SaveChangesAsync();
                 return "User Created Successfully";
             }
@@ -26,14 +35,19 @@ namespace UserManagement.Repository.CommandRepository
             }
         }
 
-        public async Task<string> DeleteUser(int UserId)
+        public async Task<string> DeleteUser(DeleteUserDTO deleteUserDTO)
         {
             try
             {
-                var user = await _context.Users.FindAsync(UserId);
+                var user = await _context.Users.FindAsync(deleteUserDTO.Id);
                 if (user != null)
                 {
                     user.IsActive = false;
+                    user.ModifiedBy = deleteUserDTO.ModifiedBy;
+
+                    TimeZoneInfo istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+                    user.ModifiedOn = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, istTimeZone);
+
                     await _context.SaveChangesAsync();
                 }
                 return "User Deleted Successfully";
@@ -44,10 +58,12 @@ namespace UserManagement.Repository.CommandRepository
             }
         }
 
-        public async Task<string> UpdateUser(User user)
+        public async Task<string> UpdateUser(UpdateUserDTO updateUserDTO)
         {
+
             try
             {
+                var user = _mapper.Map<User>(updateUserDTO);
                 var existingUsers = await _context.Users.FirstOrDefaultAsync(x => x.UserId == user.UserId);
 
                 if (existingUsers != null)

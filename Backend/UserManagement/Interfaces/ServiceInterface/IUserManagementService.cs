@@ -8,7 +8,7 @@ namespace UserManagement.Interface.ServiceInterface
         public Task<LoginDTO> Login(LoginDTO loginDTO);
         public Task<RegisterDTO> Resgister(RegisterDTO registerDTO);
         public Task<UpdateUserDTO> UpdateUser(UpdateUserDTO updateUserDTO);
-        public Task<User> UpdatePassword(User user);
-        public Task<User> DeleteUser(User user);
+        public Task<UpdatePasswordDTO> UpdatePassword(UpdatePasswordDTO updatePasswordDTO);
+        public Task<DeleteUserDTO> DeleteUser(DeleteUserDTO deleteUserDTO);
     }
 }
