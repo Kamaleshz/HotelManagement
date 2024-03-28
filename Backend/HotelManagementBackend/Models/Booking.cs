@@ -17,6 +17,8 @@ public partial class Booking
 
     public int? PeopleCount { get; set; }
 
+    public int? Amount { get; set; }
+
     public bool? IsActive { get; set; }
 
     public string? CreatedBy { get; set; }

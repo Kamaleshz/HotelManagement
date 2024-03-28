@@ -1,6 +1,7 @@
 ﻿namespace HotelManagementBackend.Interfaces.RepositoryInterface.CommandInterfaces
 {
-    public class IRoomCommands
+    public class IRoomCommand
     {
+
     }
 }

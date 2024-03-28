@@ -31,13 +31,15 @@ public partial class HotelManagementContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }
-    
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=KANINI-LTP-682;Database=hotelManagement;User Id=sa;Password=97466Abc;Encrypt=False;TrustServerCertificate=true");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Amenity>(entity =>
         {
-            entity.HasKey(e => e.AmenityId).HasName("PK__Amenity__842AF50B88A5969D");
+            entity.HasKey(e => e.AmenityId).HasName("PK__Amenity__842AF50B3C3C2DC4");
 
             entity.ToTable("Amenity");
 
@@ -46,7 +48,7 @@ public partial class HotelManagementContext : DbContext
 
         modelBuilder.Entity<Booking>(entity =>
         {
-            entity.HasKey(e => e.BookingId).HasName("PK__Booking__73951AEDA6BFFF8A");
+            entity.HasKey(e => e.BookingId).HasName("PK__Booking__73951AED20458BD1");
 
             entity.ToTable("Booking");
 
@@ -54,38 +56,40 @@ public partial class HotelManagementContext : DbContext
             entity.Property(e => e.Checkout).HasColumnType("datetime");
             entity.Property(e => e.CreatedBy).HasMaxLength(100);
             entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+            entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
             entity.Property(e => e.ModifiedBy).HasMaxLength(100);
             entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
 
             entity.HasOne(d => d.Room).WithMany(p => p.Bookings)
                 .HasForeignKey(d => d.RoomId)
-                .HasConstraintName("FK__Booking__RoomId__571DF1D5");
+                .HasConstraintName("FK__Booking__RoomId__59FA5E80");
 
             entity.HasOne(d => d.User).WithMany(p => p.Bookings)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__Booking__UserId__5812160E");
+                .HasConstraintName("FK__Booking__UserId__5AEE82B9");
         });
 
         modelBuilder.Entity<FeedBack>(entity =>
         {
-            entity.HasKey(e => e.FeedBackId).HasName("PK__FeedBack__E2CB3B87A0C17A24");
+            entity.HasKey(e => e.FeedBackId).HasName("PK__FeedBack__E2CB3B87E83BA286");
 
             entity.ToTable("FeedBack");
 
             entity.Property(e => e.CreatedBy).HasMaxLength(50);
             entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+            entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
             entity.Property(e => e.ModifiedBy).HasMaxLength(50);
             entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
             entity.Property(e => e.Review).HasMaxLength(100);
 
             entity.HasOne(d => d.Booking).WithMany(p => p.FeedBacks)
                 .HasForeignKey(d => d.BookingId)
-                .HasConstraintName("FK__FeedBack__Bookin__59063A47");
+                .HasConstraintName("FK__FeedBack__Bookin__5BE2A6F2");
         });
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Role__8AFACE1A2FA9CD87");
+            entity.HasKey(e => e.RoleId).HasName("PK__Role__8AFACE1A2AA15BDC");
 
             entity.ToTable("Role");
 
@@ -96,18 +100,18 @@ public partial class HotelManagementContext : DbContext
 
         modelBuilder.Entity<Room>(entity =>
         {
-            entity.HasKey(e => e.RoomId).HasName("PK__Room__32863939E2A4236A");
+            entity.HasKey(e => e.RoomId).HasName("PK__Room__32863939B0768986");
 
             entity.ToTable("Room");
 
             entity.HasOne(d => d.RoomType).WithMany(p => p.Rooms)
                 .HasForeignKey(d => d.RoomTypeId)
-                .HasConstraintName("FK__Room__RoomTypeId__59FA5E80");
+                .HasConstraintName("FK__Room__RoomTypeId__5CD6CB2B");
         });
 
         modelBuilder.Entity<RoomType>(entity =>
         {
-            entity.HasKey(e => e.RoomTypeId).HasName("PK__RoomType__BCC89631F7362F50");
+            entity.HasKey(e => e.RoomTypeId).HasName("PK__RoomType__BCC896312A08394D");
 
             entity.ToTable("RoomType");
 
@@ -117,22 +121,22 @@ public partial class HotelManagementContext : DbContext
 
         modelBuilder.Entity<RoomTypeAmenity>(entity =>
         {
-            entity.HasKey(e => e.RoomTypeAmenityId).HasName("PK__RoomType__A2C9AC415CD42D5D");
+            entity.HasKey(e => e.RoomTypeAmenityId).HasName("PK__RoomType__A2C9AC41D0FC9FC1");
 
             entity.ToTable("RoomTypeAmenity");
 
             entity.HasOne(d => d.Amenity).WithMany(p => p.RoomTypeAmenities)
                 .HasForeignKey(d => d.AmenityId)
-                .HasConstraintName("FK__RoomTypeA__Ameni__5BE2A6F2");
+                .HasConstraintName("FK__RoomTypeA__Ameni__5EBF139D");
 
             entity.HasOne(d => d.RoomType).WithMany(p => p.RoomTypeAmenities)
                 .HasForeignKey(d => d.RoomTypeId)
-                .HasConstraintName("FK__RoomTypeA__RoomT__5AEE82B9");
+                .HasConstraintName("FK__RoomTypeA__RoomT__5DCAEF64");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__User__1788CC4CEA111789");
+            entity.HasKey(e => e.UserId).HasName("PK__User__1788CC4CF4D63328");
 
             entity.ToTable("User");
 
@@ -143,6 +147,7 @@ public partial class HotelManagementContext : DbContext
             entity.Property(e => e.FirstName)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
             entity.Property(e => e.LastName)
                 .HasMaxLength(50)
                 .IsUnicode(false);
@@ -159,7 +164,7 @@ public partial class HotelManagementContext : DbContext
 
             entity.HasOne(d => d.UserRoleNavigation).WithMany(p => p.Users)
                 .HasForeignKey(d => d.UserRole)
-                .HasConstraintName("FK__User__UserRole__5CD6CB2B");
+                .HasConstraintName("FK__User__UserRole__5FB337D6");
         });
 
         OnModelCreatingPartial(modelBuilder);
