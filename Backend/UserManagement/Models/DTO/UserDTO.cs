@@ -12,10 +12,18 @@
 
         public string? UserPassword { get; set; }
 
+        public byte[]? HashKey { get; set; }
+
         public long? UserPhoneNumber { get; set; }
 
         public int? UserRole { get; set; }
 
         public string? CreatedBy { get; set; }
+
+        public string? ModifiedBy { get; set; }
+
+        public DateTime ModifiedOn { get; set; }
+
+        public string? Token { get; set; }
     }
 }

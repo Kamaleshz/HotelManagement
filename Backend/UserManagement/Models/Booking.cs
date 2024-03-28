@@ -29,8 +29,6 @@ public partial class Booking
 
     public string? ModifiedBy { get; set; }
 
-    public virtual ICollection<FeedBack> FeedBacks { get; set; } = new List<FeedBack>();
-
     public virtual Room? Room { get; set; }
 
     public virtual User? User { get; set; }

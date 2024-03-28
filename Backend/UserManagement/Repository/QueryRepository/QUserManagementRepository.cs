@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UserManagement.Interface.RepositoryInterface.QueryInterface;
 using UserManagement.Models;
+using UserManagement.Models.DTO;
 
 namespace UserManagement.Repository.QueryRepository
 {
@@ -40,6 +41,11 @@ namespace UserManagement.Repository.QueryRepository
             {
                 throw new Exception("Error:" + ex.Message);
             }
+        }
+
+        public async Task<string> GetRoleNameById(UserDTO roleDTO)
+        {
+            return await _context.GetRoleNameById(roleDTO);
         }
     }
 }

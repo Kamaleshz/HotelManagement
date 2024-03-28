@@ -24,7 +24,7 @@ namespace UserManagement.Repository.CommandRepository
 
                 TimeZoneInfo istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
                 user.CreatedOn = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, istTimeZone);
-
+                user.CreatedBy = user.FirstName;
                 await _context.Users.AddAsync(user);
                 await _context.SaveChangesAsync();
                 return "User Created Successfully";
@@ -35,11 +35,11 @@ namespace UserManagement.Repository.CommandRepository
             }
         }
 
-        public async Task<string> DeleteUser(DeleteUserDTO deleteUserDTO)
+        public async Task<string> DeleteUser(UserDTO deleteUserDTO)
         {
             try
             {
-                var user = await _context.Users.FindAsync(deleteUserDTO.Id);
+                var user = await _context.Users.FindAsync(deleteUserDTO.UserId);
                 if (user != null)
                 {
                     user.IsActive = false;
@@ -58,7 +58,7 @@ namespace UserManagement.Repository.CommandRepository
             }
         }
 
-        public async Task<string> UpdateUser(UpdateUserDTO updateUserDTO)
+        public async Task<string> UpdateUser(UserDTO updateUserDTO)
         {
 
             try
@@ -74,7 +74,7 @@ namespace UserManagement.Repository.CommandRepository
                     existingUsers.UserPassword = user.UserPassword ?? existingUsers.UserPassword;
                     existingUsers.UserPhoneNumber = user.UserPhoneNumber ?? existingUsers.UserPhoneNumber;
                     existingUsers.UserRole = user.UserRole ?? existingUsers.UserRole;
-                    existingUsers.ModifiedBy = user.ModifiedBy ?? existingUsers.ModifiedBy;
+                    existingUsers.ModifiedBy = user.ModifiedBy;
 
                     TimeZoneInfo istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
                     existingUsers.ModifiedOn = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, istTimeZone);

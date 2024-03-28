@@ -5,10 +5,11 @@ namespace UserManagement.Interface.ServiceInterface
 {
     public interface IUserManagementService
     {
-        public Task<LoginDTO> Login(LoginDTO loginDTO);
-        public Task<RegisterDTO> Resgister(RegisterDTO registerDTO);
-        public Task<UpdateUserDTO> UpdateUser(UpdateUserDTO updateUserDTO);
+        public Task<UserDTO> Login(UserDTO userDTO);
+        public Task<UserDTO> GetUserByMailId(UserDTO mailIdDTO);
+        public Task<UserDTO> Resgister(UserDTO registerDTO);
+        public Task<string> UpdateUser(UserDTO updateUserDTO);
         public Task<UpdatePasswordDTO> UpdatePassword(UpdatePasswordDTO updatePasswordDTO);
-        public Task<DeleteUserDTO> DeleteUser(DeleteUserDTO deleteUserDTO);
+        public Task<string> DeleteUser(UserDTO deleteUserDTO);
     }
 }

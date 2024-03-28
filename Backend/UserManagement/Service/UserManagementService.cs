@@ -1,8 +1,10 @@
-﻿using UserManagement.Interface.RepositoryInterface.CommandInterface;
+﻿using System.Security.Cryptography;
+using System.Text;
+using UserManagement.Interface.RepositoryInterface.CommandInterface;
 using UserManagement.Interface.RepositoryInterface.QueryInterface;
 using UserManagement.Interface.ServiceInterface;
+using UserManagement.Interfaces.ServiceInterface;
 using UserManagement.Models.DTO;
-using UserManagement.Repository.CommandRepository;
 
 namespace UserManagement.Service
 {
@@ -10,24 +12,72 @@ namespace UserManagement.Service
     {
         private readonly ICUserManagementRepository _commandRepository;
         private readonly IQUserManagementRepository _queryRepository;
+        private readonly IUserTokenService _userTokenService;
 
-        public UserManagementService (ICUserManagementRepository cUserManagementRepository, IQUserManagementRepository qUserManagementRepository)
+
+        public UserManagementService (ICUserManagementRepository cUserManagementRepository, IQUserManagementRepository qUserManagementRepository, IUserTokenService userTokenService)
         {
             _commandRepository = cUserManagementRepository;
             _queryRepository = qUserManagementRepository;
+            _userTokenService = userTokenService;
         }
 
-        public Task<DeleteUserDTO> DeleteUser(DeleteUserDTO deleteUserDTO)
+        public async Task<string> DeleteUser(UserDTO deleteUserDTO)
         {
-            throw new NotImplementedException();
+            return await _commandRepository.DeleteUser(deleteUserDTO);
         }
 
-        public Task<LoginDTO> Login(LoginDTO loginDTO)
+        public async Task<UserDTO> GetUserByMailId(UserDTO mailIdDTO)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var allUsers = await _queryRepository.GetAllUsers();
+                var user = allUsers.FirstOrDefault(u => u.UserEmail ==  mailIdDTO.UserEmail && u.IsActive == true);
+                if (user != null)
+                {
+                    mailIdDTO.UserId = user.UserId;
+                    return mailIdDTO;
+                }
+                throw new NullReferenceException("No user found under this mail id");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error:" + ex.Message);
+            }
         }
 
-        public Task<RegisterDTO> Resgister(RegisterDTO registerDTO)
+        public async Task<UserDTO> Login(UserDTO userDTO)
+        {
+            userDTO = await GetUserByMailId(userDTO);
+            var userData = await _queryRepository.GetUserById(userDTO.UserId);
+            try
+            {
+                if (userData != null && userData.HashKey != null && userDTO.UserPassword != null)
+                {
+                  var hmac = new HMACSHA512(userData.HashKey);
+                  var userPass = hmac.ComputeHash(Encoding.UTF8.GetBytes(userDTO.UserPassword));
+                  for (int i = 0; i < userPass.Length; i++)
+                  {
+                        if (userData == null || userData.HashKey == null || userData?.HashKey[i] == null)
+                            throw new Exception("User data is null");
+                        if (userPass[i] != userData.HashKey[i])
+                          throw new Exception("Wrong Password");
+                  }
+                  userDTO = new UserDTO();
+                  userDTO.UserId = userData.UserId;
+                  userDTO.FirstName = userData.FirstName;
+                  userDTO.UserRole = userData.UserRole;
+                  userDTO.Token = await _userTokenService.GenerateToken(userDTO);
+                }
+                return userDTO;
+            }
+            catch (Exception ex)
+            {
+                throw new NullReferenceException("Error:" + ex.Message);
+            }
+        }
+
+        public Task<UserDTO> Resgister(UserDTO registerDTO)
         {
             throw new NotImplementedException();
         }
@@ -37,9 +87,9 @@ namespace UserManagement.Service
             throw new NotImplementedException();
         }
 
-        public Task<UpdateUserDTO> UpdateUser(UpdateUserDTO updateUserDTO)
+        public async Task<string> UpdateUser(UserDTO updateUserDTO)
         {
-            throw new NotImplementedException();
+            return await _commandRepository.UpdateUser(updateUserDTO);
         }
     }
 }
