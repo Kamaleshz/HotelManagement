@@ -16,16 +16,14 @@ namespace UserManagement.Repository.CommandRepository
             _context = context;
             _mapper = mapper;
         }
-        public async Task<string> CreateUser(UserDTO userDTO)
+        public async Task<string> CreateUser(User userDTO)
         {
             try
             {
-                var user = _mapper.Map<User>(userDTO);
-
                 TimeZoneInfo istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
-                user.CreatedOn = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, istTimeZone);
-                user.CreatedBy = user.FirstName;
-                await _context.Users.AddAsync(user);
+                userDTO.CreatedOn = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, istTimeZone);
+                userDTO.CreatedBy = userDTO.FirstName;
+                await _context.AddAsync(userDTO);
                 await _context.SaveChangesAsync();
                 return "User Created Successfully";
             }
@@ -71,7 +69,6 @@ namespace UserManagement.Repository.CommandRepository
                     existingUsers.FirstName = user.FirstName ?? existingUsers.FirstName;
                     existingUsers.LastName = user.LastName ?? existingUsers.LastName;
                     existingUsers.UserEmail = user.UserEmail ?? existingUsers.UserEmail;
-                    existingUsers.UserPassword = user.UserPassword ?? existingUsers.UserPassword;
                     existingUsers.UserPhoneNumber = user.UserPhoneNumber ?? existingUsers.UserPhoneNumber;
                     existingUsers.UserRole = user.UserRole ?? existingUsers.UserRole;
                     existingUsers.ModifiedBy = user.ModifiedBy;

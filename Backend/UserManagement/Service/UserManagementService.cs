@@ -4,6 +4,7 @@ using UserManagement.Interface.RepositoryInterface.CommandInterface;
 using UserManagement.Interface.RepositoryInterface.QueryInterface;
 using UserManagement.Interface.ServiceInterface;
 using UserManagement.Interfaces.ServiceInterface;
+using UserManagement.Models;
 using UserManagement.Models.DTO;
 
 namespace UserManagement.Service
@@ -52,10 +53,10 @@ namespace UserManagement.Service
             var userData = await _queryRepository.GetUserById(userDTO.UserId);
             try
             {
-                if (userData != null && userData.HashKey != null && userDTO.UserPassword != null)
+                if (userData != null && userData.HashKey != null && userDTO.Password != null)
                 {
                   var hmac = new HMACSHA512(userData.HashKey);
-                  var userPass = hmac.ComputeHash(Encoding.UTF8.GetBytes(userDTO.UserPassword));
+                  var userPass = hmac.ComputeHash(Encoding.UTF8.GetBytes(userDTO.Password));
                   for (int i = 0; i < userPass.Length; i++)
                   {
                         if (userData == null || userData.HashKey == null || userData?.HashKey[i] == null)
@@ -77,9 +78,34 @@ namespace UserManagement.Service
             }
         }
 
-        public Task<UserDTO> Resgister(UserDTO registerDTO)
+        public async Task<UserDTO> Resgister(User registerDTO)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using(var hmac = new HMACSHA512())
+                {
+                    if(registerDTO.Password != null)
+                        registerDTO.UserPassword = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDTO.Password));
+                        registerDTO.HashKey = hmac.Key;
+
+                        if (registerDTO.UserRole == 2)
+                            registerDTO.IsActive = false;
+                        registerDTO.IsActive = true;
+
+                        var result = await _commandRepository.CreateUser(registerDTO);
+
+                        if(result != null)
+                        {
+                            registerDTO.Token = await _userTokenService.GenerateToken(registerDTO);
+                        }
+                        return registerDTO;
+                    throw new NullReferenceException("Password connot be null");
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         public Task<UpdatePasswordDTO> UpdatePassword(UpdatePasswordDTO updatePasswordDTO)

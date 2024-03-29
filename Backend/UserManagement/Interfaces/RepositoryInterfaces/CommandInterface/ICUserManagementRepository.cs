@@ -5,7 +5,7 @@ namespace UserManagement.Interface.RepositoryInterface.CommandInterface
 {
     public interface ICUserManagementRepository
     {
-        public Task<string> CreateUser(UserDTO userDTO);
+        public Task<string> CreateUser(User userDTO);
 
         public Task<string> UpdateUser(UserDTO updateUserDTO);
 

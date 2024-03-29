@@ -8,7 +8,7 @@ namespace UserManagement.Models
     {
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<RoleDTO>().HasNoKey();
+            modelBuilder.Entity<UserDTO>().HasNoKey();
         }
 
         public async Task<string> GetRoleNameById(UserDTO userDTO)

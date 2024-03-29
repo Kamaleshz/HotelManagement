@@ -20,8 +20,46 @@ namespace UserManagement.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(UserDTO userDTO)
         {
-           var login = await _userManagementService.Login(userDTO);
-            return Ok(login);
+            try
+            {
+               var result = await _userManagementService.Login(userDTO);
+               return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response<UserDTO>(new UserDTO(), ex.Message));
+            }
+        }
+
+        [HttpPost]
+
+        public async Task<IActionResult> Register(RegisterDTO userDTO)
+        {
+            try
+            {
+                var result = await _userManagementService.Resgister(userDTO);
+                return Ok(result);
+         
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response<RegisterDTO>(new RegisterDTO(), ex.Message));
+            }
+        }
+
+        [HttpDelete]
+
+        public async Task<IActionResult> Delete(UserDTO userDTO)
+        {
+            try
+            {
+                var result = await _userManagementService.DeleteUser(userDTO);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response<UserDTO>(new UserDTO(), ex.Message));
+            }
         }
     }
 }
