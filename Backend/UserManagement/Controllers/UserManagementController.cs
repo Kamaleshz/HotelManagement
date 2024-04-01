@@ -23,7 +23,7 @@ namespace UserManagement.Controllers
             try
             {
                var result = await _userManagementService.Login(userDTO);
-               return Ok(result);
+               return Ok(new Response<UserDTO>(result));
             }
             catch (Exception ex)
             {
@@ -38,7 +38,7 @@ namespace UserManagement.Controllers
             try
             {
                 var result = await _userManagementService.Resgister(userDTO);
-                return Ok(result);
+                return Ok(new Response<UserDTO>(result));
          
             }
             catch (Exception ex)
@@ -54,11 +54,26 @@ namespace UserManagement.Controllers
             try
             {
                 var result = await _userManagementService.DeleteUser(userDTO);
-                return Ok(result);
+                return Ok(new Response<string>(result));
             }
             catch (Exception ex)
             {
                 return BadRequest(new Response<UserDTO>(new UserDTO(), ex.Message));
+            }
+        }
+
+        [HttpPut]
+
+        public async Task<IActionResult> UpdatePassword(UserDTO resgisteeDTO)
+        {
+            try
+            {
+                var result = await _userManagementService.UpdatePassword(resgisteeDTO);
+                return Ok(new Response<string>(result));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new Response<string>(new string(""), ex.Message));
             }
         }
     }

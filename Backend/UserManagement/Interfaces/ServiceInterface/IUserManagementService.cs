@@ -9,7 +9,7 @@ namespace UserManagement.Interface.ServiceInterface
         public Task<UserDTO> GetUserByMailId(UserDTO mailIdDTO);
         public Task<UserDTO> Resgister(RegisterDTO registerDTO);
         public Task<string> UpdateUser(UserDTO updateUserDTO);
-        public Task<UpdatePasswordDTO> UpdatePassword(UpdatePasswordDTO updatePasswordDTO);
+        public Task<string> UpdatePassword(UserDTO updatePasswordDTO);
         public Task<string> DeleteUser(UserDTO deleteUserDTO);
     }
 }

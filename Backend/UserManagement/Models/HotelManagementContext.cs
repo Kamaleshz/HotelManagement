@@ -19,6 +19,8 @@ public partial class HotelManagementContext : DbContext
 
     public virtual DbSet<Booking> Bookings { get; set; }
 
+    public virtual DbSet<FeedBack> FeedBacks { get; set; }
+
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<Room> Rooms { get; set; }
@@ -44,7 +46,7 @@ public partial class HotelManagementContext : DbContext
 
         modelBuilder.Entity<Booking>(entity =>
         {
-            entity.HasKey(e => e.BookingId).HasName("PK__Booking__73951AED2A67DC9F");
+            entity.HasKey(e => e.BookingId).HasName("PK__Booking__73951AED512482C4");
 
             entity.ToTable("Booking");
 
@@ -58,11 +60,29 @@ public partial class HotelManagementContext : DbContext
 
             entity.HasOne(d => d.Room).WithMany(p => p.Bookings)
                 .HasForeignKey(d => d.RoomId)
-                .HasConstraintName("FK__Booking__RoomId__73BA3083");
+                .HasConstraintName("FK__Booking__RoomId__06CD04F7");
 
             entity.HasOne(d => d.User).WithMany(p => p.Bookings)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__Booking__UserId__74AE54BC");
+                .HasConstraintName("FK__Booking__UserId__07C12930");
+        });
+
+        modelBuilder.Entity<FeedBack>(entity =>
+        {
+            entity.HasKey(e => e.FeedBackId).HasName("PK__FeedBack__E2CB3B8705288A15");
+
+            entity.ToTable("FeedBack");
+
+            entity.Property(e => e.CreatedBy).HasMaxLength(50);
+            entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+            entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
+            entity.Property(e => e.ModifiedBy).HasMaxLength(50);
+            entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
+            entity.Property(e => e.Review).HasMaxLength(100);
+
+            entity.HasOne(d => d.Booking).WithMany(p => p.FeedBacks)
+                .HasForeignKey(d => d.BookingId)
+                .HasConstraintName("FK__FeedBack__Bookin__0B91BA14");
         });
 
         modelBuilder.Entity<Role>(entity =>
@@ -114,7 +134,7 @@ public partial class HotelManagementContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__User__1788CC4C36FA066A");
+            entity.HasKey(e => e.UserId).HasName("PK__User__1788CC4C2B087197");
 
             entity.ToTable("User");
 
@@ -125,7 +145,6 @@ public partial class HotelManagementContext : DbContext
             entity.Property(e => e.FirstName)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.HashKey).HasMaxLength(50);
             entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
             entity.Property(e => e.LastName)
                 .HasMaxLength(50)
@@ -137,11 +156,10 @@ public partial class HotelManagementContext : DbContext
             entity.Property(e => e.UserEmail)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.UserPassword).HasMaxLength(50);
 
             entity.HasOne(d => d.UserRoleNavigation).WithMany(p => p.Users)
                 .HasForeignKey(d => d.UserRole)
-                .HasConstraintName("FK__User__UserRole__6FE99F9F");
+                .HasConstraintName("FK__User__UserRole__02FC7413");
         });
 
         OnModelCreatingPartial(modelBuilder);

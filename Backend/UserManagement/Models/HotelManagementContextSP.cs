@@ -15,20 +15,22 @@ namespace UserManagement.Models
         {
             try
             {
-                string sql = "EXEC GetRoleNameById @RoleId";
-                SqlParameter roleIdParameter = new SqlParameter("@RoleId", userDTO.UserRole);
+                string sql = "EXEC GetRoleNameById @UserId";
+                SqlParameter userIdParameter = new SqlParameter("@UserId", userDTO.UserId);
 
-                var roleName = await Database.ExecuteSqlRawAsync(sql, roleIdParameter);
+                var roleName = await Database.ExecuteSqlRawAsync(sql, userIdParameter);
 
-                if (roleName <= 0)
-                    throw new NullReferenceException("No Role found under this ID:");
+                if (roleName.ToString() == "")
+                    throw new NullReferenceException("No Role found for this user ID.");
+
                 return roleName.ToString();
             }
             catch (Exception ex)
             {
-                throw new Exception("Error:" + ex.Message);
+                throw new Exception("Error: " + ex.Message);
             }
         }
+
 
     }
 }

@@ -16,7 +16,7 @@ namespace UserManagement.Repository.CommandRepository
             _context = context;
             _mapper = mapper;
         }
-        public async Task<string> CreateUser(User userDTO)
+        public async Task<User> CreateUser(User userDTO)
         {
             try
             {
@@ -25,7 +25,7 @@ namespace UserManagement.Repository.CommandRepository
                 userDTO.CreatedBy = userDTO.FirstName;
                 await _context.AddAsync(userDTO);
                 await _context.SaveChangesAsync();
-                return "User Created Successfully";
+                return userDTO;
             }
             catch (Exception ex)
             {

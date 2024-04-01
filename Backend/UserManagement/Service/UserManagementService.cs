@@ -53,7 +53,7 @@ namespace UserManagement.Service
             var userData = await _queryRepository.GetUserById(userDTO.UserId);
             try
             {
-                if (userData != null && userData.HashKey != null && userDTO.Password != null)
+                if (userData != null && userData.HashKey != null && userDTO.Password != null && userData.UserPassword != null)
                 {
                   var hmac = new HMACSHA512(userData.HashKey);
                   var userPass = hmac.ComputeHash(Encoding.UTF8.GetBytes(userDTO.Password));
@@ -61,7 +61,7 @@ namespace UserManagement.Service
                   {
                         if (userData == null || userData.HashKey == null || userData?.HashKey[i] == null)
                             throw new Exception("User data is null");
-                        if (userPass[i] != userData.HashKey[i])
+                        if (userPass[i] != userData.UserPassword[i])
                           throw new Exception("Wrong Password");
                   }
                   userDTO = new UserDTO();
@@ -78,29 +78,32 @@ namespace UserManagement.Service
             }
         }
 
-        public async Task<UserDTO> Resgister(User registerDTO)
+        public async Task<UserDTO> Resgister(RegisterDTO registerDTO)
         {
             try
             {
-                using(var hmac = new HMACSHA512())
-                {
-                    if(registerDTO.Password != null)
-                        registerDTO.UserPassword = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDTO.Password));
-                        registerDTO.HashKey = hmac.Key;
+                UserDTO userDTO = null;
+                var hmac = new HMACSHA512();
+                if (registerDTO.Password != null)
+                    registerDTO.UserPassword = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDTO.Password));
+                    registerDTO.HashKey = hmac.Key;
 
-                        if (registerDTO.UserRole == 2)
-                            registerDTO.IsActive = false;
-                        registerDTO.IsActive = true;
+                    if (registerDTO.UserRole == 2)
+                        registerDTO.IsActive = false;
+                    registerDTO.IsActive = true;
 
-                        var result = await _commandRepository.CreateUser(registerDTO);
+                var result = await _commandRepository.CreateUser(registerDTO);
 
-                        if(result != null)
-                        {
-                            registerDTO.Token = await _userTokenService.GenerateToken(registerDTO);
-                        }
-                        return registerDTO;
-                    throw new NullReferenceException("Password connot be null");
-                }
+                    if(result != null)
+                    {
+                        userDTO = new UserDTO();
+                        userDTO.FirstName = result.FirstName;
+                        userDTO.LastName = result.LastName;
+                        userDTO.UserRole = result.UserRole;
+                        userDTO.Token = await _userTokenService.GenerateToken(userDTO);
+                    }
+                    return userDTO;
+                throw new NullReferenceException("Password connot be null");
             }
             catch(Exception ex)
             {
@@ -108,9 +111,22 @@ namespace UserManagement.Service
             }
         }
 
-        public Task<UpdatePasswordDTO> UpdatePassword(UpdatePasswordDTO updatePasswordDTO)
+        public async Task<string> UpdatePassword(UserDTO updatePasswordDTO)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var user = await GetUserByMailId(updatePasswordDTO);
+                if (user != null && updatePasswordDTO.HashKey != null && updatePasswordDTO != null)
+                {
+                    var hmac = new HMACSHA512(updatePasswordDTO.HashKey);
+                    user.UserPassword = hmac.ComputeHash(Encoding.UTF8.GetBytes(updatePasswordDTO.Password));
+                    await _commandRepository.UpdateUser(updatePasswordDTO);
+
+                    return "Password Updated Successfully";
+                }
+                throw new NullReferenceException("Null");
+            }
+            catch (Exception ex) { throw new Exception(ex.Message) ; }
         }
 
         public async Task<string> UpdateUser(UserDTO updateUserDTO)
