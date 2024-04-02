@@ -11,6 +11,7 @@
         public string? UserEmail { get; set; }
 
         public string? Password { get; set; }
+
         public byte[]? UserPassword { get; set; }
 
         public byte[]? HashKey { get; set; }
@@ -27,7 +28,7 @@
 
         public string? ModifiedBy { get; set; }
 
-        public DateTime ModifiedOn { get; set; }
+        public DateTime? ModifiedOn { get; set; }
 
         public string? Token { get; set; }
     }

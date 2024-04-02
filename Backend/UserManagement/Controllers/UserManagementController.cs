@@ -76,5 +76,20 @@ namespace UserManagement.Controllers
                 return BadRequest(new Response<string>(new string(""), ex.Message));
             }
         }
+
+        [HttpPut]
+
+        public async Task<IActionResult> UpdateUserDetails(UserDTO userDTO)
+        {
+            try
+            {
+                var result = await _userManagementService.UpdateUser(userDTO);
+                return Ok(new Response<string>(result));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Response<string>(new string(""),ex.Message));
+            }
+        }
     }
 }

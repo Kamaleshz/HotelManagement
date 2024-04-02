@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using AutoMapper;
+using System.Security.Cryptography;
 using System.Text;
 using UserManagement.Interface.RepositoryInterface.CommandInterface;
 using UserManagement.Interface.RepositoryInterface.QueryInterface;
@@ -14,13 +15,15 @@ namespace UserManagement.Service
         private readonly ICUserManagementRepository _commandRepository;
         private readonly IQUserManagementRepository _queryRepository;
         private readonly IUserTokenService _userTokenService;
+        private readonly IMapper _mapper;
 
 
-        public UserManagementService (ICUserManagementRepository cUserManagementRepository, IQUserManagementRepository qUserManagementRepository, IUserTokenService userTokenService)
+        public UserManagementService (ICUserManagementRepository cUserManagementRepository, IQUserManagementRepository qUserManagementRepository, IUserTokenService userTokenService, IMapper mapper)
         {
             _commandRepository = cUserManagementRepository;
             _queryRepository = qUserManagementRepository;
             _userTokenService = userTokenService;
+            _mapper = mapper;
         }
 
         public async Task<string> DeleteUser(UserDTO deleteUserDTO)
@@ -36,7 +39,21 @@ namespace UserManagement.Service
                 var user = allUsers.FirstOrDefault(u => u.UserEmail ==  mailIdDTO.UserEmail && u.IsActive == true);
                 if (user != null)
                 {
+                    var users = _mapper.Map<User>(mailIdDTO);
+
                     mailIdDTO.UserId = user.UserId;
+                    mailIdDTO.FirstName = user.FirstName;
+                    mailIdDTO.LastName = user.LastName;
+                    mailIdDTO.UserEmail = user.UserEmail;
+                    mailIdDTO.UserPassword = user.UserPassword;
+                    mailIdDTO.HashKey = user.HashKey;
+                    mailIdDTO.UserPhoneNumber = user.UserPhoneNumber;
+                    mailIdDTO.UserRole = user.UserRole;
+                    mailIdDTO.IsActive = user.IsActive;
+                    mailIdDTO.CreatedBy = user.CreatedBy;
+                    mailIdDTO.CreatedOn = user.CreatedOn;
+                    mailIdDTO.ModifiedBy = user.FirstName;
+                    mailIdDTO.ModifiedOn = user.ModifiedOn;
                     return mailIdDTO;
                 }
                 throw new NullReferenceException("No user found under this mail id");
@@ -53,21 +70,17 @@ namespace UserManagement.Service
             var userData = await _queryRepository.GetUserById(userDTO.UserId);
             try
             {
-                if (userData != null && userData.HashKey != null && userDTO.Password != null && userData.UserPassword != null)
+                if (userData != null && userDTO.HashKey != null && userDTO.Password != null && userData.UserPassword != null)
                 {
                   var hmac = new HMACSHA512(userData.HashKey);
                   var userPass = hmac.ComputeHash(Encoding.UTF8.GetBytes(userDTO.Password));
                   for (int i = 0; i < userPass.Length; i++)
                   {
-                        if (userData == null || userData.HashKey == null || userData?.HashKey[i] == null)
+                        if (userData == null || userData.HashKey == null)
                             throw new Exception("User data is null");
                         if (userPass[i] != userData.UserPassword[i])
                           throw new Exception("Wrong Password");
                   }
-                  userDTO = new UserDTO();
-                  userDTO.UserId = userData.UserId;
-                  userDTO.FirstName = userData.FirstName;
-                  userDTO.UserRole = userData.UserRole;
                   userDTO.Token = await _userTokenService.GenerateToken(userDTO);
                 }
                 return userDTO;
@@ -115,12 +128,12 @@ namespace UserManagement.Service
         {
             try
             {
-                var user = await GetUserByMailId(updatePasswordDTO);
-                if (user != null && updatePasswordDTO.HashKey != null && updatePasswordDTO != null)
+                var user = await _queryRepository.GetUserById(updatePasswordDTO.UserId);
+                if (user != null)
                 {
-                    var hmac = new HMACSHA512(updatePasswordDTO.HashKey);
+                    var hmac = new HMACSHA512(user.HashKey);
                     user.UserPassword = hmac.ComputeHash(Encoding.UTF8.GetBytes(updatePasswordDTO.Password));
-                    await _commandRepository.UpdateUser(updatePasswordDTO);
+                    await _commandRepository.UpdateUser(user);
 
                     return "Password Updated Successfully";
                 }
@@ -131,7 +144,8 @@ namespace UserManagement.Service
 
         public async Task<string> UpdateUser(UserDTO updateUserDTO)
         {
-            return await _commandRepository.UpdateUser(updateUserDTO);
+            var user = _mapper.Map<User>(updateUserDTO);
+            return await _commandRepository.UpdateUser(user);
         }
     }
 }

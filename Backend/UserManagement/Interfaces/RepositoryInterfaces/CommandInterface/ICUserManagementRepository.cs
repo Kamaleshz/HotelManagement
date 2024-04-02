@@ -7,7 +7,7 @@ namespace UserManagement.Interface.RepositoryInterface.CommandInterface
     {
         public Task<User> CreateUser(User userDTO);
 
-        public Task<string> UpdateUser(UserDTO updateUserDTO);
+        public Task<string> UpdateUser(User updateUserDTO);
 
         public Task<string> DeleteUser(UserDTO deleteUserDTO);
     }

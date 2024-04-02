@@ -56,7 +56,7 @@ namespace UserManagement.Repository.CommandRepository
             }
         }
 
-        public async Task<string> UpdateUser(UserDTO updateUserDTO)
+        public async Task<string> UpdateUser(User updateUserDTO)
         {
 
             try
@@ -69,9 +69,14 @@ namespace UserManagement.Repository.CommandRepository
                     existingUsers.FirstName = user.FirstName ?? existingUsers.FirstName;
                     existingUsers.LastName = user.LastName ?? existingUsers.LastName;
                     existingUsers.UserEmail = user.UserEmail ?? existingUsers.UserEmail;
+                    existingUsers.UserPassword = user.UserPassword ?? existingUsers.UserPassword;
+                    existingUsers.HashKey = user.HashKey ?? existingUsers.HashKey;
                     existingUsers.UserPhoneNumber = user.UserPhoneNumber ?? existingUsers.UserPhoneNumber;
                     existingUsers.UserRole = user.UserRole ?? existingUsers.UserRole;
-                    existingUsers.ModifiedBy = user.ModifiedBy;
+                    existingUsers.IsActive = user.IsActive ?? existingUsers.IsActive;
+                    existingUsers.CreatedBy = user.CreatedBy ?? existingUsers.CreatedBy;
+                    existingUsers.CreatedOn = user.CreatedOn ?? existingUsers.CreatedOn;
+                    existingUsers.ModifiedBy = user.FirstName;
 
                     TimeZoneInfo istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
                     existingUsers.ModifiedOn = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, istTimeZone);
