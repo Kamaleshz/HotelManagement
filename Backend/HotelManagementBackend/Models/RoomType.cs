@@ -11,7 +11,7 @@ public partial class RoomType
 
     public string? RoomTypeDescription { get; set; }
 
-    public int? Price { get; set; }
+    public decimal? Price { get; set; }
 
     public virtual ICollection<RoomTypeAmenity> RoomTypeAmenities { get; set; } = new List<RoomTypeAmenity>();
 

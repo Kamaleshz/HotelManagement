@@ -1,10 +1,11 @@
 ﻿using HotelManagementBackend.DTOs;
+using HotelManagementBackend.ViewModels;
 
 namespace HotelManagementBackend.Interfaces.RepositoryInterface.CommandInterfaces
 {
     public interface IBookingCommand
     {
-        public Task<BookingDetails> CreateBooking(BookingDetails bookingDetails);
-        public Task<BookingDetails> CancelBooking(int id);
+        public Task<BookingDetailsDTO> CreateBooking(BookingDetailsDTO bookingDetails);
+        public Task<BookingView?> CancelBooking(DeletionDTO id);
     }
 }

@@ -8,7 +8,7 @@ namespace HotelManagementBackend.DTOs
         public int RoomNumber { get; set; }
         public string? RoomTypeName { get; set; }
         public string? RoomTypeDescription { get; set; }
-        public int Price { get; set; }
+        public decimal Price { get; set; }
         public string? AmenityNames { get; set; }
     }
 }

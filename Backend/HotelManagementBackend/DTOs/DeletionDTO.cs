@@ -3,6 +3,6 @@
     public class DeletionDTO
     {
         public int Id { get; set; } 
-        public Boolean IsActive { get; set; }
+        public string? ModifiedBy { get; set; }
     }
 }

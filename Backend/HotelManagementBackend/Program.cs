@@ -1,8 +1,10 @@
 using AutoMapper;
+using HotelManagementBackend.Interfaces.RepositoryInterface.CommandInterfaces;
 using HotelManagementBackend.Interfaces.RepositoryInterface.QueryInterfaces;
 using HotelManagementBackend.Interfaces.ServiceInterfaces;
 using HotelManagementBackend.Middlewares;
 using HotelManagementBackend.Models;
+using HotelManagementBackend.Repositories.CommandRepos;
 using HotelManagementBackend.Repositories.QueryRepos;
 using HotelManagementBackend.Services;
 using Microsoft.EntityFrameworkCore;
@@ -17,8 +19,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IRoomServices, RoomService>();
 builder.Services.AddScoped<IRoomQuery, RoomQuery>();
+builder.Services.AddScoped<IBookingQuery, BookingQuery>();
+builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IBookingCommand, BookingCommand>();  
 builder.Services.AddTransient<GlobalExceptionMiddleware>();
-
 
 var connectionString = builder.Configuration.GetConnectionString("SQLConnection");
 
@@ -51,7 +55,6 @@ app.UseAuthorization();
 app.UseCors("CORS");
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
-
 
 app.MapControllers();
 

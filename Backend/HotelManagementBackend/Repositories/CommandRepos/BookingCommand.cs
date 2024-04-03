@@ -1,18 +1,29 @@
 ﻿using HotelManagementBackend.DTOs;
 using HotelManagementBackend.Interfaces.RepositoryInterface.CommandInterfaces;
+using HotelManagementBackend.Models;
+using HotelManagementBackend.ViewModels;
 
 namespace HotelManagementBackend.Repositories.CommandRepos
 {
     public class BookingCommand : IBookingCommand
     {
-        public Task<BookingDetails> CancelBooking(int id)
+        private readonly HotelManagementContext _context;
+        public BookingCommand(HotelManagementContext context) 
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public Task<BookingDetails> CreateBooking(BookingDetails bookingDetails)
+        public async Task<BookingView?> CancelBooking(DeletionDTO deletion)
         {
-            throw new NotImplementedException();
+            var Booking = await _context.GetBookingsDetailsById(deletion.Id);
+            await _context.CancelBooking(deletion);
+            return Booking;
+        }
+
+        public async Task<BookingDetailsDTO> CreateBooking(BookingDetailsDTO bookingDetails)
+        {
+            var Booking = await _context.CreateBooking(bookingDetails);
+            return bookingDetails;
         }
     }
 }

@@ -1,11 +1,12 @@
 ﻿using HotelManagementBackend.DTOs;
+using HotelManagementBackend.ViewModels;
 
 namespace HotelManagementBackend.Interfaces.RepositoryInterface.QueryInterfaces
 {
     public interface IBookingQuery
     {
-        public Task<List<BookingDetails>> GetAllBooking();
-        public Task<List<BookingDetails>> GetBookingByPerson(int id);
-        public Task<BookingDetails> GetBookingById(int id);
+        public Task<List<BookingView>> GetAllBooking();
+        public Task<List<BookingView>> GetBookingByPerson(int id);
+        public Task<BookingView?> GetBookingById(int id);
     }
 }

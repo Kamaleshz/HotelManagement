@@ -1,23 +1,47 @@
-﻿using HotelManagementBackend.DTOs;
+﻿using HotelManagementBackend.Exceptions;
 using HotelManagementBackend.Interfaces.RepositoryInterface.QueryInterfaces;
+using HotelManagementBackend.Models;
+using HotelManagementBackend.ViewModels;
 
 namespace HotelManagementBackend.Repositories.QueryRepos
 {
     public class BookingQuery : IBookingQuery
     {
-        public Task<List<BookingDetails>> GetAllBooking()
+        private readonly HotelManagementContext _context;
+
+        public BookingQuery(HotelManagementContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public Task<BookingDetails> GetBookingById(int id)
+        public async Task<List<BookingView>> GetAllBooking()
         {
-            throw new NotImplementedException();
+            var Booking = await _context.GetBookingDetails();
+            if (Booking.Count == 0)
+            {
+                throw new NullException("No Rooms Booked");
+            }
+            return Booking;
         }
 
-        public Task<List<BookingDetails>> GetBookingByPerson(int id)
+        public async Task<BookingView?> GetBookingById(int id)
         {
-            throw new NotImplementedException();
+            var booking = await _context.GetBookingsDetailsById(id);
+            if (booking == null)
+            {
+                throw new NullException("Booking Not found");
+            }
+            return booking;
+        }
+
+        public async Task<List<BookingView>> GetBookingByPerson(int id)
+        {
+            var booking = await _context.GetBookingsDetailsByUser(id);
+            if (booking.Count == 0)
+            {
+                throw new NullException("No Rooms Booked");
+            }
+            return booking;
         }
     }
 }

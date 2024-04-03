@@ -33,7 +33,7 @@ public partial class HotelManagementContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=KANINI-LTP-682;Database=hotelManagement;User Id=sa;Password=97466Abc;Encrypt=False;TrustServerCertificate=true");
+        => optionsBuilder.UseSqlServer("Server=KANINI-LTP-682;Database=HotelManagement;User Id=sa;Password=97466Abc;Encrypt=False;TrustServerCertificate=true");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -52,6 +52,7 @@ public partial class HotelManagementContext : DbContext
 
             entity.ToTable("Booking");
 
+            entity.Property(e => e.Amount).HasColumnType("money");
             entity.Property(e => e.CheckIn).HasColumnType("datetime");
             entity.Property(e => e.Checkout).HasColumnType("datetime");
             entity.Property(e => e.CreatedBy).HasMaxLength(100);
@@ -115,6 +116,7 @@ public partial class HotelManagementContext : DbContext
 
             entity.ToTable("RoomType");
 
+            entity.Property(e => e.Price).HasColumnType("money");
             entity.Property(e => e.RoomTypeDescription).HasMaxLength(100);
             entity.Property(e => e.RoomTypeName).HasMaxLength(100);
         });
