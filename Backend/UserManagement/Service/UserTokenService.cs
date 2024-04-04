@@ -16,7 +16,12 @@ namespace UserManagement.Service
 
         public UserTokenService(IConfiguration configuration, IQUserManagementRepository qUserManagementRepository)
         {
-            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["TokenKey"]));
+            string? tokenKey = configuration["TokenKey"];
+            if (tokenKey == null)
+            {
+                throw new ArgumentNullException(nameof(configuration), "Token key configuration is missing.");
+            }
+            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
             _repository = qUserManagementRepository;
         }
         public async Task<string> GenerateToken(UserDTO loginDTO)

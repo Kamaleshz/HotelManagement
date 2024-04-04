@@ -6,6 +6,7 @@ using System.Text;
 using UserManagement.Interface.RepositoryInterface.CommandInterface;
 using UserManagement.Interface.RepositoryInterface.QueryInterface;
 using UserManagement.Interface.ServiceInterface;
+using UserManagement.Interfaces.RepositoryInterfaces.QueryInterface;
 using UserManagement.Interfaces.ServiceInterface;
 using UserManagement.Models;
 using UserManagement.Repository.CommandRepository;
@@ -22,6 +23,8 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddDbContext<HotelManagementContext>(opts => opts.UseSqlServer(builder.Configuration.GetConnectionString("SQLConnection")));
 builder.Services.AddScoped<ICUserManagementRepository, CUserManagementRepository>();
 builder.Services.AddScoped<IQUserManagementRepository, QUserManagementRepository>();
+builder.Services.AddScoped<IQRoleRepository, QRoleRepository>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IUserManagementService, UserManagementService>();
 builder.Services.AddScoped<IUserTokenService, UserTokenService>();
 
@@ -31,7 +34,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["TokenKey"])),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["TokenKey"] ?? string.Empty)),
         ValidateIssuer = false,
         ValidateAudience = false
     };
