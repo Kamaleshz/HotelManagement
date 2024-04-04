@@ -2,4 +2,4 @@ Hotel Management Project Using Sql Server, Asp .net core webapis and ReactJs Fra
 
 Authors: 
 Muhammed Ali Masood
-Kamlesh Saravana
+Kamalesh Saravana
