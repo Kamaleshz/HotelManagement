@@ -2,6 +2,7 @@
 using HotelManagementBackend.ViewModels;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace HotelManagementBackend.Models
 {
@@ -67,22 +68,28 @@ namespace HotelManagementBackend.Models
         public async Task<int> CreateBooking(BookingDetailsDTO booking)
         {
             // Your stored procedure call using raw SQL
-            string sql = "EXEC CreateBooking @RoomId, @UserId, @CheckIn, @CheckOut, @PeopleCount, @Amount, @CreatedBy";
+            string sql = "EXEC CreateBooking @RoomId, @UserId, @CheckIn, @CheckOut, @PeopleCount, @Amount, @CreatedBy, @Success OUTPUT";
 
             // Parameters for the stored procedure
             SqlParameter[] parameters =
             {
-                new SqlParameter("@RoomId", booking.RoomID),
-                new SqlParameter("@UserId", booking.UserID),
-                new SqlParameter("@CheckIn", booking.CheckIn),
-                new SqlParameter("@CheckOut", booking.CheckOut),
-                new SqlParameter("@PeopleCount", booking.PeopleCount),
-                new SqlParameter("@Amount", booking.Amount),
-                new SqlParameter("@CreatedBy", booking.CreatedBy),
-            };
+        new SqlParameter("@RoomId", booking.RoomID),
+        new SqlParameter("@UserId", booking.UserID),
+        new SqlParameter("@CheckIn", booking.CheckIn),
+        new SqlParameter("@CheckOut", booking.CheckOut),
+        new SqlParameter("@PeopleCount", booking.PeopleCount),
+        new SqlParameter("@Amount", booking.Amount),
+        new SqlParameter("@CreatedBy", booking.CreatedBy),
+        new SqlParameter("@Success", SqlDbType.Int) { Direction = ParameterDirection.Output }
+    };
 
             // Execute the stored procedure
-            return await Database.ExecuteSqlRawAsync(sql, parameters);
+            await Database.ExecuteSqlRawAsync(sql, parameters);
+
+            // Check the value of the output parameter to determine success
+            int success = Convert.ToInt32(parameters[7].Value);
+            return success;
         }
+
     }
 }
