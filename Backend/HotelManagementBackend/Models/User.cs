@@ -13,9 +13,11 @@ public partial class User
 
     public string? UserEmail { get; set; }
 
-    public string? UserPassword { get; set; }
+    public byte[]? UserPassword { get; set; }
 
-    public int? UserPhoneNumber { get; set; }
+    public byte[]? HashKey { get; set; }
+
+    public long? UserPhoneNumber { get; set; }
 
     public int? UserRole { get; set; }
 
