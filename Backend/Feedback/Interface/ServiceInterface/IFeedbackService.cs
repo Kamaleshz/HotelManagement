@@ -11,6 +11,6 @@ namespace Feedback.Interface.ServiceInterface
 
         public Task<string> DeleteFeedback(FeedBack feedback);
 
-        public Task<ICollection<FeedBack>> GetFeedbacksByRoomId(FeedbackDTO feedbackDTO);
+        public Task<ICollection<FeedbackDTO>> GetFeedbacksByRoomId(FeedbackDTO feedbackDTO);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Feedback.Models;
+using Feedback.Models.DTO_s;
 
 namespace Feedback.Interface.RepositoryInterface.QueryInterface
 {
@@ -6,6 +7,6 @@ namespace Feedback.Interface.RepositoryInterface.QueryInterface
     {
         public Task<ICollection<FeedBack>> Get();
 
-        public Task<ICollection<FeedBack>> GetById(int id);
+        public Task<ICollection<FeedbackDTO>> GetFeedbacksByRoomId(int roomId);
     }
 }
