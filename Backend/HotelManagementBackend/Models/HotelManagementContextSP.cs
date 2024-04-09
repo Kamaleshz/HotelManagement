@@ -13,6 +13,10 @@ namespace HotelManagementBackend.Models
             modelBuilder.Entity<RoomDetailDTO>().HasNoKey();
             modelBuilder.Entity<BookingView>().HasNoKey();
             modelBuilder.Entity<DeletionDTO>().HasNoKey();
+            modelBuilder.Entity<BookingTimeDTO>().HasNoKey();
+            modelBuilder.Entity<RoomTypeView>().HasNoKey();
+            modelBuilder.Entity<RoomsView>().HasNoKey();
+
         }
 
         public async Task<List<RoomDetailDTO>> GetAllRooms()
@@ -32,6 +36,18 @@ namespace HotelManagementBackend.Models
             var query = $"Exec GetRoomDetailsById @RoomId = '{id}'";
             var rooms =  await Set<RoomDetailDTO>().FromSqlRaw(query).ToListAsync();
             return rooms.FirstOrDefault();
+        }
+
+        public async Task<List<RoomTypeView>> GetRoomTypeAvailable(BookingTimeDTO bookingTime)
+        {
+            var query = $"Exec GetRoomTypes @CheckIn = '{bookingTime.CheckIn}', @Checkout = '{bookingTime.CheckOut}'";
+            return await Set<RoomTypeView>().FromSqlRaw(query).ToListAsync();
+        }
+
+        public async Task<List<RoomsView>> GetAvailableRooms(BookingTimeDTO bookingTime)
+        {
+            var query = $"Exec GetAvailableRooms @CheckIn = '{bookingTime.CheckIn}', @Checkout = '{bookingTime.CheckOut}', @RoomTypeId = '{bookingTime.id}'";
+            return await Set<RoomsView>().FromSqlRaw(query).ToListAsync();
         }
 
         public async Task<List<BookingView>> GetBookingDetails()
