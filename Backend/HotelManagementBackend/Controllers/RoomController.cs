@@ -1,6 +1,7 @@
 ﻿using HotelManagementBackend.DTOs;
 using HotelManagementBackend.Interfaces.ServiceInterfaces;
 using HotelManagementBackend.Services;
+using HotelManagementBackend.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,5 +36,20 @@ namespace HotelManagementBackend.Controllers
             var Rooms = await _roomService.GetRoomsByType(roomTypeId, roomFilterDTO);
             return Rooms;
         }
+
+        [HttpGet]
+        public async Task<List<RoomTypeView>> GetAvailableRoomTypes([FromQuery] BookingTimeDTO bookingTimeDTO)
+        {
+            var Rooms = await _roomService.GetAvailableRooms(bookingTimeDTO);
+            return Rooms;
+        }
+
+        [HttpGet]
+        public async Task<List<RoomsView>> GetAvailableRooms([FromQuery] BookingTimeDTO bookingTimeDTO)
+        {
+            var Rooms = await _roomService.GetAllAvailableRooms(bookingTimeDTO);
+            return Rooms;
+        }
+
     }
 }

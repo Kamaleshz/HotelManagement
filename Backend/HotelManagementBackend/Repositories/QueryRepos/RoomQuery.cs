@@ -2,6 +2,7 @@
 using HotelManagementBackend.Exceptions;
 using HotelManagementBackend.Interfaces.RepositoryInterface.QueryInterfaces;
 using HotelManagementBackend.Models;
+using HotelManagementBackend.ViewModels;
 
 namespace HotelManagementBackend.Repositories.QueryRepos
 {
@@ -19,6 +20,26 @@ namespace HotelManagementBackend.Repositories.QueryRepos
             if (rooms == null || rooms.Count == 0)
             {
                 throw new NullException("No rooms Available");
+            }
+            return rooms;
+        }
+
+        public async Task<List<RoomsView>> GetAvailableRooms(BookingTimeDTO bookingTimeDTO)
+        {
+            var rooms = await _context.GetAvailableRooms(bookingTimeDTO);
+            if (rooms == null || rooms.Count == 0)
+            {
+                throw new NullException("No Rooms Available on this date");
+            }
+            return rooms;
+        }
+
+        public async Task<List<RoomTypeView>> GetAvailableRoomTypes(BookingTimeDTO bookingTimeDTO)
+        {
+            var rooms = await _context.GetRoomTypeAvailable(bookingTimeDTO);
+            if (rooms == null || rooms.Count == 0)
+            {
+                throw new NullException("No Rooms Available on this date");
             }
             return rooms;
         }

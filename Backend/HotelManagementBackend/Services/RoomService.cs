@@ -2,6 +2,7 @@
 using HotelManagementBackend.Interfaces.RepositoryInterface.QueryInterfaces;
 using HotelManagementBackend.Interfaces.ServiceInterfaces;
 using HotelManagementBackend.Repositories.QueryRepos;
+using HotelManagementBackend.ViewModels;
 
 namespace HotelManagementBackend.Services
 {
@@ -12,9 +13,22 @@ namespace HotelManagementBackend.Services
         {
             _roomQuery = roomQuery;
         }
+
+        public async Task<List<RoomsView>> GetAllAvailableRooms(BookingTimeDTO bookingTimeDTO)
+        {
+            var rooms = await _roomQuery.GetAvailableRooms(bookingTimeDTO);
+            return rooms;
+        }
+
         public Task<List<RoomDetailDTO>> GetAllRooms()
         {
             var rooms = _roomQuery.GetAllRooms();
+            return rooms;
+        }
+
+        public async Task<List<RoomTypeView>> GetAvailableRooms(BookingTimeDTO bookingTimeDTO)
+        {
+            var rooms = await _roomQuery.GetAvailableRoomTypes(bookingTimeDTO);
             return rooms;
         }
 
