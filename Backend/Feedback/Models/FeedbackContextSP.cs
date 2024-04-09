@@ -9,7 +9,7 @@ namespace Feedback.Models
     {
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<FeedBack>().HasNoKey();
+            modelBuilder.Entity<FeedbackDTO>().HasNoKey();
         }
 
         public async Task<ICollection<FeedbackDTO>> GetFeedbacksByRoomId(int roomId)
