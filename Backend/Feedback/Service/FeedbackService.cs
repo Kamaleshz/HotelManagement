@@ -39,9 +39,9 @@ namespace Feedback.Service
             return feedbackDTO;
         }
 
-        public Task<ICollection<FeedbackDTO>> GetFeedbacksByRoomId(FeedbackDTO feedbackDTO)
+        public Task<ICollection<FeedbackDTO>> GetFeedbacksByRoomId(int feedbackDTO)
         {
-            return _queryRepository.GetFeedbacksByRoomId(feedbackDTO.RoomId);
+            return _queryRepository.GetFeedbacksByRoomId(feedbackDTO);
         }
 
         public Task<string> UpdateFeedback(FeedbackDTO feedbackDTO)

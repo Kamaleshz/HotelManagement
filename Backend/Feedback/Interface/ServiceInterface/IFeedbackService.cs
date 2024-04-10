@@ -13,6 +13,6 @@ namespace Feedback.Interface.ServiceInterface
 
         public Task<ICollection<FeedbackDTO>> GetAllFeedbacks();
 
-        public Task<ICollection<FeedbackDTO>> GetFeedbacksByRoomId(FeedbackDTO feedbackDTO);
+        public Task<ICollection<FeedbackDTO>> GetFeedbacksByRoomId(int feedbackDTO);
     }
 }

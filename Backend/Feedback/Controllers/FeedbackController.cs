@@ -60,12 +60,12 @@ namespace Feedback.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetFeebackByRoomId(FeedbackDTO feedbackDTO)
+        public async Task<IActionResult> GetFeebackByRoomId(int feedbackDTO)
         {
             try
             {
                 var result = await _feedbackService.GetFeedbacksByRoomId(feedbackDTO);
-                return Ok(new Response<FeedbackDTO>(feedbackDTO));
+                return Ok(new Response<ICollection<FeedbackDTO>>(result));
             }
             catch(Exception ex)
             {
