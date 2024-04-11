@@ -18,7 +18,7 @@ namespace Feedback.Repository
         {
             try
             {
-                var feedbacks = await _context.FeedBacks.ToListAsync();
+                var feedbacks = await _context.FeedBacks.Where(f => f.IsActive == true).ToListAsync();
                 if (feedbacks == null)
                     throw new NullReferenceException("No feedbacks found");
                 return feedbacks;
@@ -32,6 +32,11 @@ namespace Feedback.Repository
         public async Task<ICollection<FeedbackDTO>> GetFeedbacksByRoomId(int roomId)
         {
             return await _context.GetFeedbacksByRoomId(roomId);
+        }
+
+        public async Task<ICollection<FeedbackDTO>> GetFeedbacksByRoomTypeId(int roomTypeId)
+        {
+            return await _context.GetFeedbacksByRoomTypeId(roomTypeId);
         }
     }
 }

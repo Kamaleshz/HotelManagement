@@ -8,5 +8,7 @@ namespace Feedback.Interface.RepositoryInterface.QueryInterface
         public Task<ICollection<FeedBack>> Get();
 
         public Task<ICollection<FeedbackDTO>> GetFeedbacksByRoomId(int roomId);
+
+        public Task<ICollection<FeedbackDTO>> GetFeedbacksByRoomTypeId(int roomTypeId);
     }
 }

@@ -60,11 +60,11 @@ namespace Feedback.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetFeebackByRoomId(int feedbackDTO)
+        public async Task<IActionResult> GetAllFeedbacks()
         {
             try
             {
-                var result = await _feedbackService.GetFeedbacksByRoomId(feedbackDTO);
+                var result = await _feedbackService.GetAllFeedbacks();
                 return Ok(new Response<ICollection<FeedbackDTO>>(result));
             }
             catch(Exception ex)
@@ -74,11 +74,26 @@ namespace Feedback.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllFeedbacks()
+        public async Task<IActionResult> GetFeebackByRoomId(int roomId)
         {
             try
             {
-                var result = await _feedbackService.GetAllFeedbacks();
+                var result = await _feedbackService.GetFeedbacksByRoomId(roomId);
+                return Ok(new Response<ICollection<FeedbackDTO>>(result));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new Response<FeedbackDTO>(new FeedbackDTO(), ex.Message));
+            }
+        }
+
+        [HttpGet]
+
+        public async Task<IActionResult> GetFeedbackByRoomTypeId(int roomTypeId)
+        {
+            try
+            {
+                var result = await _feedbackService.GetFeedbacksByRoomTypeId(roomTypeId);
                 return Ok(new Response<ICollection<FeedbackDTO>>(result));
             }
             catch(Exception ex)

@@ -39,9 +39,9 @@ namespace Feedback.Repository
                 var feedback = await _context.FeedBacks.FindAsync(feedBack.FeedBackId);
                 if (feedback == null)
                     throw new NullReferenceException("Can't find this feedback");
-                feedBack.IsActive = false;
+                feedback.IsActive = false;
                 TimeZoneInfo istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
-                feedBack.ModifiedOn = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, istTimeZone);
+                feedback.ModifiedOn = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, istTimeZone);
 
                 await _context.SaveChangesAsync();
 

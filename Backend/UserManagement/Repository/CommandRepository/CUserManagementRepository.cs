@@ -62,7 +62,7 @@ namespace UserManagement.Repository.CommandRepository
             try
             {
                 var user = _mapper.Map<User>(updateUserDTO);
-                var existingUsers = await _context.Users.FirstOrDefaultAsync(x => x.UserId == user.UserId && x.IsActive == true);
+                var existingUsers = await _context.Users.FirstOrDefaultAsync(x => x.UserId == user.UserId && x.IsActive == true);   
 
                 if (existingUsers != null)
                 {

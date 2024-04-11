@@ -4,6 +4,7 @@ using Feedback.Interface.RepositoryInterface.QueryInterface;
 using Feedback.Interface.ServiceInterface;
 using Feedback.Models;
 using Feedback.Models.DTO_s;
+using Microsoft.Identity.Client;
 
 namespace Feedback.Service
 {
@@ -39,9 +40,14 @@ namespace Feedback.Service
             return feedbackDTO;
         }
 
-        public Task<ICollection<FeedbackDTO>> GetFeedbacksByRoomId(int feedbackDTO)
+        public Task<ICollection<FeedbackDTO>> GetFeedbacksByRoomId(int roomId)
         {
-            return _queryRepository.GetFeedbacksByRoomId(feedbackDTO);
+            return _queryRepository.GetFeedbacksByRoomId(roomId);
+        }
+
+        public async Task<ICollection<FeedbackDTO>> GetFeedbacksByRoomTypeId(int roomTypeId)
+        {
+            return await _queryRepository.GetFeedbacksByRoomTypeId(roomTypeId);
         }
 
         public Task<string> UpdateFeedback(FeedbackDTO feedbackDTO)
