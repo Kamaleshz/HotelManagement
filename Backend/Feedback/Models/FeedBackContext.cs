@@ -1,0 +1,161 @@
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+
+namespace Feedback.Models;
+
+public partial class FeedBackContext : DbContext
+{
+    public FeedBackContext()
+    {
+    }
+
+    public FeedBackContext(DbContextOptions<FeedBackContext> options)
+        : base(options)
+    {
+    }
+
+    public virtual DbSet<Amenity> Amenities { get; set; }
+
+    public virtual DbSet<Booking> Bookings { get; set; }
+
+    public virtual DbSet<FeedBack> FeedBacks { get; set; }
+
+    public virtual DbSet<Role> Roles { get; set; }
+
+    public virtual DbSet<Room> Rooms { get; set; }
+
+    public virtual DbSet<RoomType> RoomTypes { get; set; }
+
+    public virtual DbSet<RoomTypeAmenity> RoomTypeAmenities { get; set; }
+
+    public virtual DbSet<User> Users { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Amenity>(entity =>
+        {
+            entity.HasKey(e => e.AmenityId).HasName("PK__Amenity__842AF50B2965A719");
+
+            entity.ToTable("Amenity");
+
+            entity.Property(e => e.AmenityName).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<Booking>(entity =>
+        {
+            entity.HasKey(e => e.BookingId).HasName("PK__Booking__73951AED512482C4");
+
+            entity.ToTable("Booking");
+
+            entity.Property(e => e.Amount).HasColumnType("money");
+            entity.Property(e => e.CheckIn).HasColumnType("datetime");
+            entity.Property(e => e.Checkout).HasColumnType("datetime");
+            entity.Property(e => e.CreatedBy).HasMaxLength(100);
+            entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+            entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
+            entity.Property(e => e.ModifiedBy).HasMaxLength(100);
+            entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Room).WithMany(p => p.Bookings)
+                .HasForeignKey(d => d.RoomId)
+                .HasConstraintName("FK__Booking__RoomId__06CD04F7");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Bookings)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("FK__Booking__UserId__07C12930");
+        });
+
+        modelBuilder.Entity<FeedBack>(entity =>
+        {
+            entity.HasKey(e => e.FeedBackId).HasName("PK__FeedBack__E2CB3B8705288A15");
+
+            entity.ToTable("FeedBack");
+
+            entity.Property(e => e.CreatedBy).HasMaxLength(100);
+            entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+            entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
+            entity.Property(e => e.ModifiedBy).HasMaxLength(100);
+            entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
+            entity.Property(e => e.Review).HasMaxLength(100);
+
+            entity.HasOne(d => d.Booking).WithMany(p => p.FeedBacks)
+                .HasForeignKey(d => d.BookingId)
+                .HasConstraintName("FK__FeedBack__Bookin__0B91BA14");
+        });
+
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.HasKey(e => e.RoleId).HasName("PK__Role__8AFACE1AF63D7530");
+
+            entity.ToTable("Role");
+
+            entity.Property(e => e.RoleName).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<Room>(entity =>
+        {
+            entity.HasKey(e => e.RoomId).HasName("PK__Room__32863939DDFE2BB2");
+
+            entity.ToTable("Room");
+
+            entity.HasOne(d => d.RoomType).WithMany(p => p.Rooms)
+                .HasForeignKey(d => d.RoomTypeId)
+                .HasConstraintName("FK__Room__RoomTypeId__38996AB5");
+        });
+
+        modelBuilder.Entity<RoomType>(entity =>
+        {
+            entity.HasKey(e => e.RoomTypeId).HasName("PK__RoomType__BCC89631368E634E");
+
+            entity.ToTable("RoomType");
+
+            entity.Property(e => e.Price).HasColumnType("money");
+            entity.Property(e => e.RoomTypeDescription).HasMaxLength(100);
+            entity.Property(e => e.RoomTypeName).HasMaxLength(100);
+        });
+
+        modelBuilder.Entity<RoomTypeAmenity>(entity =>
+        {
+            entity.HasKey(e => e.RoomTypeAmenityId).HasName("PK__RoomType__A2C9AC418991044B");
+
+            entity.ToTable("RoomTypeAmenity");
+
+            entity.HasOne(d => d.Amenity).WithMany(p => p.RoomTypeAmenities)
+                .HasForeignKey(d => d.AmenityId)
+                .HasConstraintName("FK__RoomTypeA__Ameni__3E52440B");
+
+            entity.HasOne(d => d.RoomType).WithMany(p => p.RoomTypeAmenities)
+                .HasForeignKey(d => d.RoomTypeId)
+                .HasConstraintName("FK__RoomTypeA__RoomT__3D5E1FD2");
+        });
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.UserId).HasName("PK__User__1788CC4C2B087197");
+
+            entity.ToTable("User");
+
+            entity.HasIndex(e => e.UserEmail, "UQ_UserEmail").IsUnique();
+
+            entity.Property(e => e.CreatedBy).HasMaxLength(100);
+            entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+            entity.Property(e => e.FirstName).HasMaxLength(100);
+            entity.Property(e => e.IsActive).HasDefaultValueSql("((1))");
+            entity.Property(e => e.LastName).HasMaxLength(100);
+            entity.Property(e => e.ModifiedBy).HasMaxLength(100);
+            entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
+            entity.Property(e => e.UserEmail).HasMaxLength(100);
+
+            entity.HasOne(d => d.UserRoleNavigation).WithMany(p => p.Users)
+                .HasForeignKey(d => d.UserRole)
+                .HasConstraintName("FK__User__UserRole__02FC7413");
+        });
+
+        OnModelCreatingPartial(modelBuilder);
+    }
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+}
