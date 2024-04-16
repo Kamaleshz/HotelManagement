@@ -7,7 +7,7 @@ namespace UserManagement.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [EnableCors("MyCors")]
+    [EnableCors("Corspolicy")]
     public class UserManagementController : ControllerBase
     {
         private readonly IUserManagementService _userManagementService;

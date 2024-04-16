@@ -7,7 +7,7 @@ namespace Feedback.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [EnableCors("MyCors")]
+    [EnableCors("Corspolicy")]
     public class FeedbackController : ControllerBase
     {
         private readonly IFeedbackService _feedbackService;
