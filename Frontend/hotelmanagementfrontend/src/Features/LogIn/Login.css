@@ -39,8 +39,8 @@
       max-width: none;
     }
   }
-
-.form-control:invalid {
-  border-color: red !important;
-  box-shadow: 0 0 0 0.2rem rgba(255, 0, 0, 0.25) !important;
-}
+  .form-control.is-invalid { 
+    border-color: red !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 0, 0, 0.25) !important;
+  }
+  

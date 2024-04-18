@@ -9,17 +9,25 @@ function LoginPopup() {
   const [password, setPassword] = useState('');
   const [emailValid, setEmailValid] = useState(false);
   const [passwordValid, setPasswordValid] = useState(false);
-  const [emailClicked, setEmailClicked] = useState(false);
-  const [passwordClicked, setPasswordClicked] = useState(false);
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
 
   const handleEmailChange = (e) => {
     const newEmail = e.target.value;
     setEmail(newEmail);
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z]+\.[a-zA-Z]{2,}$/;
     const isValidFormat = emailRegex.test(newEmail);
-    setEmailValid(isValidFormat && newEmail.includes('@') && newEmail.split('@')[1].includes('.'));
+    setEmailValid(isValidFormat);
   };
-  
+
+  const handleEmailBlur = () => {
+    setEmailTouched(true); // Set emailTouched to true when email field is blurred
+  };
+
+  const handlePasswordBlur = () => {
+    setPasswordTouched(true);
+  }
+
   const handlePasswordChange = (e) => {
     const newPassword = e.target.value;
     setPassword(newPassword);
@@ -28,11 +36,11 @@ function LoginPopup() {
 
   const login = async () => {
     try {
-        await UserManagementService.login({ userEmail: email, password: password });
-        toast.success("Logged In successfully")
-        handleClose();
+      await UserManagementService.login({ userEmail: email, password: password });
+      toast.success("Logged In successfully")
+      handleClose();
     } catch (error) {
-        toast.error(error.response.data.error);
+      toast.error(error.response.data.error);
     }
   };
 
@@ -58,37 +66,40 @@ function LoginPopup() {
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">Login</h5>
-                <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={handleClose}>
-                  <span aria-hidden="true">&times;</span>
-                </button>
               </div>
               <div className="modal-body">
                 <form>
                   <div className="form-group">
                     <label htmlFor="exampleInputEmail1">Email address</label>
-                    <input 
-                      type="email" 
-                      className={`form-control ${!emailValid && emailClicked ? 'invalid' : ''}`}
+                    <input
+                      type="email"
+                      className={`form-control ${!emailValid && emailTouched ? 'is-invalid' : ''}`}
                       id="Email1"
                       aria-describedby="emailHelp"
                       placeholder="Enter email"
                       value={email}
                       onChange={handleEmailChange}
-                      onClick={() => setEmailClicked(true)}
+                      onBlur={handleEmailBlur}
                     />
-                    <small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small>
+                    {!emailValid && emailTouched && (
+                      <small className="form-text text-danger">Please enter a valid email address.</small>
+                    )}
                   </div>
+
                   <div className="form-group">
                     <label htmlFor="exampleInputPassword1">Password</label>
                     <input
                       type="password"
-                      className={`form-control ${!passwordValid && passwordClicked ? 'invalid' : ''}`}
+                      className={`form-control ${!passwordValid && passwordTouched ? 'is-invalid' : ''}`}
                       id="Password"
                       placeholder="Password"
                       value={password}
                       onChange={handlePasswordChange}
-                      onClick={() => setPasswordClicked(true)}
+                      onBlur={handlePasswordBlur}
                     />
+                    { !passwordValid && passwordTouched && (
+                      <small className='form-text text-danger'>Please enter the password.</small>
+                    )}
                   </div>
                 </form>
               </div>

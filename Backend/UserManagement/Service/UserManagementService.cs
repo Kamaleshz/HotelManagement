@@ -51,7 +51,7 @@ namespace UserManagement.Service
                     mailIdDTO.UserRole = user.UserRole;
                     return mailIdDTO;
                 }
-                throw new NullReferenceException("No user found under this mail id");
+                throw new NullReferenceException("No user found with this email");
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
         }

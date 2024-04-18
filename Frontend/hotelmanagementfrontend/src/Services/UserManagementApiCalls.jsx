@@ -7,10 +7,14 @@ class UserManagementService {
     })
 
     async login(obj) {
-            let responce = await this.http.post(UserManagementConstants.Login, obj);
-            console.log(responce.data);
-            return responce.data;
-        }
+        let responce = await this.http.post(UserManagementConstants.Login, obj);
+        return responce.data;
+    }
+    
+    async register(obj) {
+        let responce = await this.http.post(UserManagementConstants.Register, obj);
+        return responce.data;
+    }
 }
 
 export default new UserManagementService();
