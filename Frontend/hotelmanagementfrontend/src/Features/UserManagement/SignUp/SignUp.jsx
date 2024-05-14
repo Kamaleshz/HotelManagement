@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import './SignUp.css'; // You can add your own CSS file for styling
-import UserManagementService from '../../Services/UserManagementApiCalls';
+import './SignUp.css';
+import UserManagementService from '../../../Services/UserManagementApiCalls';
 import { ToastContainer, toast } from 'react-toastify';
 
 function SignUp() {
@@ -19,6 +19,7 @@ function SignUp() {
   const [emailTouched, setEmailTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [phoneNumberTouched, setPhoneNumberTouched] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const handleFirstNameChange = (e) => {
     const newFirstName = e.target.value;
@@ -64,6 +65,10 @@ function SignUp() {
     setPasswordTouched(true);
   };
 
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
+
   const handlePhoneNumberChange = (e) => {
     const newPhoneNumber = e.target.value;
     setPhoneNumber(newPhoneNumber);
@@ -82,10 +87,10 @@ function SignUp() {
         lastName: lastName,
         userEmail: email, 
         password: password,
-        phoneNumber: phoneNumber,
+        userPhoneNumber: phoneNumber,
         userRole: 3 
       });
-      toast.success("Signed In successfully")
+      toast.success("Signed Up successfully")
     } catch (error) {
       toast.error(error.response.data.error);
     }
@@ -95,7 +100,7 @@ function SignUp() {
 
   return (
     <div className="container">
-      <h2>Sign In</h2>
+      <h2>Sign Up</h2>
       <form>
       <div className="row">
           <div className="col-sm-6">
@@ -150,15 +155,24 @@ function SignUp() {
         </div>
         <div className="form-group">
           <label htmlFor="inputPassword">Password</label>
-          <input
-            type="password"
-            className={`form-control ${!passwordValid && passwordTouched ? 'is-invalid' : ''}`}
-            id="inputPassword"
-            placeholder="Password"
-            value={password}
-            onChange={handlePasswordChange}
-            onBlur={handlePasswordBlur}
-          />
+          <div className="password-input-container">
+            <input
+              type={passwordVisible ? 'text' : 'password'}
+              className={`form-control ${!passwordValid && passwordTouched ? 'is-invalid' : ''}`}
+              id="inputPassword"
+              placeholder="Password"
+              value={password}
+              onChange={handlePasswordChange}
+              onBlur={handlePasswordBlur}
+            />
+            <button
+              type="button"
+              className={`password-toggle-btn ${!passwordValid && passwordTouched ? 'invalid': `` }`}
+              onClick={togglePasswordVisibility}
+            >
+              {passwordVisible ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye-fill"></i>}
+            </button>
+          </div>
           {!passwordValid && passwordTouched && (
             <small className="form-text text-danger">Password must be between 8 and 15 characters, and contain at least one uppercase letter, one lowercase letter, one number, and one special character.</small>
           )}
@@ -178,7 +192,7 @@ function SignUp() {
             <small className="form-text text-danger">Please enter a valid phone number.</small>
           )}
         </div>
-        <button type="button" className="btn btn-primary" onClick={signIn} disabled={!isFormValid}>Sign In</button>
+        <button type="button" className="signin-btn" onClick={signIn} disabled={!isFormValid}>Sign In</button>
       </form>
       <ToastContainer />
     </div>

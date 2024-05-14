@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './Login.css';
-import UserManagementService from '../../Services/UserManagementApiCalls';
+import UserManagementService from '../../../Services/UserManagementApiCalls';
 import { ToastContainer, toast } from 'react-toastify';
 
 function LoginPopup() {
@@ -11,6 +11,7 @@ function LoginPopup() {
   const [passwordValid, setPasswordValid] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const handleEmailChange = (e) => {
     const newEmail = e.target.value;
@@ -21,7 +22,7 @@ function LoginPopup() {
   };
 
   const handleEmailBlur = () => {
-    setEmailTouched(true); // Set emailTouched to true when email field is blurred
+    setEmailTouched(true);
   };
 
   const handlePasswordBlur = () => {
@@ -34,6 +35,9 @@ function LoginPopup() {
     setPasswordValid(newPassword.length > 0);
   };
 
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  }
   const login = async () => {
     try {
       await UserManagementService.login({ userEmail: email, password: password });
@@ -87,25 +91,34 @@ function LoginPopup() {
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="exampleInputPassword1">Password</label>
+                    <label htmlFor="inputPassword">Password</label>
+                    <div className='login-password-input-container'>
                     <input
-                      type="password"
+                      type={passwordVisible ? 'text' : 'password'}
                       className={`form-control ${!passwordValid && passwordTouched ? 'is-invalid' : ''}`}
-                      id="Password"
+                      id="Password" 
                       placeholder="Password"
                       value={password}
                       onChange={handlePasswordChange}
                       onBlur={handlePasswordBlur}
                     />
+                    <button
+                      type="button"
+                      className={`login-password-toggle-btn ${!passwordValid && passwordTouched ? 'invalid': `` }`}
+                      onClick={togglePasswordVisibility}
+                    >
+              {passwordVisible ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye-fill"></i>}
+            </button>
                     { !passwordValid && passwordTouched && (
                       <small className='form-text text-danger'>Please enter the password.</small>
                     )}
+                  </div>
                   </div>
                 </form>
               </div>
               <div className="modal-footer">
                 <button type="button" className="btn btn-secondary" onClick={handleClose}>Close</button>
-                <button type="button" className="btn btn-primary" onClick={login} disabled={!isFormValid}>Login</button>
+                <button type="button" className="login-btn" onClick={login} disabled={!isFormValid}>Login</button>  
               </div>
             </div>
           </div>

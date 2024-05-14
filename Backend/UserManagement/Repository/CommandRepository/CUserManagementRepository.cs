@@ -42,6 +42,7 @@ namespace UserManagement.Repository.CommandRepository
                 {
                     user.IsActive = false;
                     user.ModifiedBy = deleteUserDTO.ModifiedBy;
+                    user.UserEmail = user.UserEmail + "(Deleted)";
 
                     TimeZoneInfo istTimeZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
                     user.ModifiedOn = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, istTimeZone);
