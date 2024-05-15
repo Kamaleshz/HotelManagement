@@ -5,8 +5,8 @@ import SignUp from './Features/UserManagement/SignUp/SignUp';
 function App() {
   return (
     <div className="App">
-      <SignUp></SignUp>
-      {/* <LoginPopup></LoginPopup> */}
+      {/* <SignUp></SignUp> */}
+      <LoginPopup></LoginPopup>
     </div>
   );
 }

@@ -112,6 +112,7 @@ function SignUp() {
                 id="inputFirstName"
                 placeholder="Enter first name"
                 value={firstName}
+                maxLength={15}
                 onChange={handleFirstNameChange}
                 onBlur={handleFirstNameBlur}
               />
@@ -129,6 +130,7 @@ function SignUp() {
                 id="inputLastName"
                 placeholder="Enter last name"
                 value={lastName}
+                maxLength={15}
                 onChange={handleLastNameChange}
                 onBlur={handleLastNameBlur}
               />
@@ -146,6 +148,7 @@ function SignUp() {
             id="inputEmail"
             placeholder="Enter email"
             value={email}
+            maxLength={30}
             onChange={handleEmailChange}
             onBlur={handleEmailBlur}
           />
@@ -162,6 +165,7 @@ function SignUp() {
               id="inputPassword"
               placeholder="Password"
               value={password}
+              maxLength={15}
               onChange={handlePasswordChange}
               onBlur={handlePasswordBlur}
             />
@@ -185,6 +189,7 @@ function SignUp() {
             id="inputPhoneNumber"
             placeholder="Enter phone number"
             value={phoneNumber}
+            maxLength={10}
             onChange={handlePhoneNumberChange}
             onBlur={handlePhoneNumberBlur}
           />

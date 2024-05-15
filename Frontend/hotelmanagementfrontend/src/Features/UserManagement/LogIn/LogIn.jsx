@@ -82,6 +82,7 @@ function LoginPopup() {
                       aria-describedby="emailHelp"
                       placeholder="Enter email"
                       value={email}
+                      maxLength={30}
                       onChange={handleEmailChange}
                       onBlur={handleEmailBlur}
                     />
@@ -99,6 +100,7 @@ function LoginPopup() {
                       id="Password" 
                       placeholder="Password"
                       value={password}
+                      maxLength={15}
                       onChange={handlePasswordChange}
                       onBlur={handlePasswordBlur}
                     />
