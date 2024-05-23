@@ -15,6 +15,11 @@ class UserManagementService {
         let responce = await this.http.post(UserManagementConstants.Register, obj);
         return responce.data;
     }
+
+    async update(obj) {
+        let responce = await this.http.put(UserManagementConstants.Update, obj);
+        return responce.data;
+    }
 }
 
 export default new UserManagementService();

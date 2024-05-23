@@ -1,122 +1,103 @@
 import React, { useState } from 'react';
 import './SignUp.css';
 import UserManagementService from '../../../Services/UserManagementApiCalls';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+
+const EMAIL_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z]+\.[a-zA-Z]{2,}$/;
+const PASSWORD_REGEX = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,15}$/;
+const PHONE_REGEX = /^\d{10}$/;
 
 function SignUp() {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [firstNameValid, setFirstNameValid] = useState(false);
-  const [lastNameValid, setLastNameValid] = useState(false);
-  const [emailValid, setEmailValid] = useState(false);
-  const [passwordValid, setPasswordValid] = useState(false);
-  const [phoneNumberValid, setPhoneNumberValid] = useState(false);
-  const [firstNameTouched, setFirstNameTouched] = useState(false);
-  const [lastNameTouched, setLastNameTouched] = useState(false);
-  const [emailTouched, setEmailTouched] = useState(false);
-  const [passwordTouched, setPasswordTouched] = useState(false);
-  const [phoneNumberTouched, setPhoneNumberTouched] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    phoneNumber: ''
+  });
+
+  const [validity, setValidity] = useState({
+    firstName: false,
+    lastName: false,
+    email: false,
+    password: false,
+    phoneNumber: false
+  });
+
+  const [touched, setTouched] = useState({
+    firstName: false,
+    lastName: false,
+    email: false,
+    password: false,
+    phoneNumber: false
+  });
+
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const navigate = useNavigate();
 
-  const handleFirstNameChange = (e) => {
-    const newFirstName = e.target.value;
-    setFirstName(newFirstName);
-    setFirstNameValid(newFirstName.length > 0);
+  const validate = {
+    firstName: (name) => name.length > 0,
+    lastName: (name) => name.length > 0,
+    email: (email) => EMAIL_REGEX.test(email),
+    password: (password) => PASSWORD_REGEX.test(password),
+    phoneNumber: (number) => PHONE_REGEX.test(number)
   };
 
-  const handleFirstNameBlur = () => {
-    setFirstNameTouched(true);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setValidity((prev) => ({ ...prev, [name]: validate[name](value) }));
   };
 
-  const handleLastNameChange = (e) => {
-    const newLastName = e.target.value;
-    setLastName(newLastName);
-    setLastNameValid(newLastName.length > 0);
-  };
-
-  const handleLastNameBlur = () => {
-    setLastNameTouched(true);
-  };
-
-  const handleEmailChange = (e) => {
-    const newEmail = e.target.value;
-    setEmail(newEmail);
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z]+\.[a-zA-Z]{2,}$/;
-    const isValidFormat = emailRegex.test(newEmail);
-    setEmailValid(isValidFormat);
-  };
-
-  const handleEmailBlur = () => {
-    setEmailTouched(true);
-  };
-
-  const handlePasswordChange = (e) => {
-    const newPassword = e.target.value;
-    setPassword(newPassword);
-    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,15}$/;
-    const isValidFormat = passwordRegex.test(newPassword);
-    setPasswordValid(isValidFormat);
-  };
-
-  const handlePasswordBlur = () => {
-    setPasswordTouched(true);
+  const handleBlur = (e) => {
+    const { name } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
   };
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
 
-  const handlePhoneNumberChange = (e) => {
-    const newPhoneNumber = e.target.value;
-    setPhoneNumber(newPhoneNumber);
-    const isValidFormat = /^\d{10}$/.test(newPhoneNumber);
-    setPhoneNumberValid(isValidFormat);
-  };
-
-  const handlePhoneNumberBlur = () => {
-    setPhoneNumberTouched(true);
-  };
-
   const signIn = async () => {
     try {
-      await UserManagementService.register({ 
-        firstName: firstName,
-        lastName: lastName,
-        userEmail: email, 
-        password: password,
-        userPhoneNumber: phoneNumber,
-        userRole: 3 
+      await UserManagementService.register({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        userEmail: formData.email,
+        password: formData.password,
+        userPhoneNumber: formData.phoneNumber,
+        userRole: 3
       });
-      toast.success("Signed Up successfully")
+      toast.success("Signed Up successfully");
+      navigate("/login");
     } catch (error) {
-      toast.error(error.response.data.error);
+      toast.error(error.response?.data?.error || "Registration failed");
     }
   };
 
-  const isFormValid = firstNameValid && lastNameValid && emailValid && passwordValid && phoneNumberValid;
+  const isFormValid = Object.values(validity).every(Boolean);
 
   return (
     <div className="container">
       <h2>Sign Up</h2>
       <form>
-      <div className="row">
+        <div className="row">
           <div className="col-sm-6">
             <div className="form-group">
               <label htmlFor="inputFirstName">First Name</label>
               <input
                 type="text"
-                className={`form-control ${!firstNameValid && firstNameTouched ? 'is-invalid' : ''}`}
+                className={`form-control ${!validity.firstName && touched.firstName ? 'is-invalid' : ''}`}
                 id="inputFirstName"
+                name="firstName"
                 placeholder="Enter first name"
-                value={firstName}
+                value={formData.firstName}
                 maxLength={15}
-                onChange={handleFirstNameChange}
-                onBlur={handleFirstNameBlur}
+                onChange={handleChange}
+                onBlur={handleBlur}
               />
-              {!firstNameValid && firstNameTouched && (
+              {!validity.firstName && touched.firstName && (
                 <small className="form-text text-danger">Please enter your first name.</small>
               )}
             </div>
@@ -126,15 +107,16 @@ function SignUp() {
               <label htmlFor="inputLastName">Last Name</label>
               <input
                 type="text"
-                className={`form-control ${!lastNameValid && lastNameTouched ? 'is-invalid' : ''}`}
+                className={`form-control ${!validity.lastName && touched.lastName ? 'is-invalid' : ''}`}
                 id="inputLastName"
+                name="lastName"
                 placeholder="Enter last name"
-                value={lastName}
+                value={formData.lastName}
                 maxLength={15}
-                onChange={handleLastNameChange}
-                onBlur={handleLastNameBlur}
+                onChange={handleChange}
+                onBlur={handleBlur}
               />
-              {!lastNameValid && lastNameTouched && (
+              {!validity.lastName && touched.lastName && (
                 <small className="form-text text-danger">Please enter your last name.</small>
               )}
             </div>
@@ -144,15 +126,16 @@ function SignUp() {
           <label htmlFor="inputEmail">Email address</label>
           <input
             type="email"
-            className={`form-control ${!emailValid && emailTouched ? 'is-invalid' : ''}`}
+            className={`form-control ${!validity.email && touched.email ? 'is-invalid' : ''}`}
             id="inputEmail"
+            name="email"
             placeholder="Enter email"
-            value={email}
+            value={formData.email}
             maxLength={30}
-            onChange={handleEmailChange}
-            onBlur={handleEmailBlur}
+            onChange={handleChange}
+            onBlur={handleBlur}
           />
-          {!emailValid && emailTouched && (
+          {!validity.email && touched.email && (
             <small className="form-text text-danger">Please enter a valid email address.</small>
           )}
         </div>
@@ -161,45 +144,48 @@ function SignUp() {
           <div className="password-input-container">
             <input
               type={passwordVisible ? 'text' : 'password'}
-              className={`form-control ${!passwordValid && passwordTouched ? 'is-invalid' : ''}`}
+              className={`form-control ${!validity.password && touched.password ? 'is-invalid' : ''}`}
               id="inputPassword"
+              name="password"
               placeholder="Password"
-              value={password}
+              value={formData.password}
               maxLength={15}
-              onChange={handlePasswordChange}
-              onBlur={handlePasswordBlur}
+              onChange={handleChange}
+              onBlur={handleBlur}
             />
             <button
               type="button"
-              className={`password-toggle-btn ${!passwordValid && passwordTouched ? 'invalid': `` }`}
+              className={`password-toggle-btn ${!validity.password && touched.password ? 'invalid' : ''}`}
               onClick={togglePasswordVisibility}
             >
               {passwordVisible ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye-fill"></i>}
             </button>
           </div>
-          {!passwordValid && passwordTouched && (
-            <small className="form-text text-danger">Password must be between 8 and 15 characters, and contain at least one uppercase letter, one lowercase letter, one number, and one special character.</small>
+          {!validity.password && touched.password && (
+            <small className="form-text text-danger">
+              Password must be between 8 and 15 characters, and contain at least one uppercase letter, one lowercase letter, one number, and one special character.
+            </small>
           )}
         </div>
         <div className="form-group">
           <label htmlFor="inputPhoneNumber">Phone Number</label>
           <input
             type="tel"
-            className={`form-control ${!phoneNumberValid && phoneNumberTouched ? 'is-invalid' : ''}`}
+            className={`form-control ${!validity.phoneNumber && touched.phoneNumber ? 'is-invalid' : ''}`}
             id="inputPhoneNumber"
+            name="phoneNumber"
             placeholder="Enter phone number"
-            value={phoneNumber}
+            value={formData.phoneNumber}
             maxLength={10}
-            onChange={handlePhoneNumberChange}
-            onBlur={handlePhoneNumberBlur}
+            onChange={handleChange}
+            onBlur={handleBlur}
           />
-          {!phoneNumberValid && phoneNumberTouched && (
+          {!validity.phoneNumber && touched.phoneNumber && (
             <small className="form-text text-danger">Please enter a valid phone number.</small>
           )}
         </div>
         <button type="button" className="signin-btn" onClick={signIn} disabled={!isFormValid}>Sign In</button>
       </form>
-      <ToastContainer />
     </div>
   );
 }

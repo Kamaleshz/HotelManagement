@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import './Login.css';
 import UserManagementService from '../../../Services/UserManagementApiCalls';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import {useDispatch} from 'react-redux';
+import { setUserDetails } from '../../State/UserDetails.actions';
 
 function LoginPopup() {
   const [show, setShow] = useState(false);
@@ -12,6 +15,8 @@ function LoginPopup() {
   const [emailTouched, setEmailTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleEmailChange = (e) => {
     const newEmail = e.target.value;
@@ -38,11 +43,18 @@ function LoginPopup() {
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   }
+
   const login = async () => {
     try {
-      await UserManagementService.login({ userEmail: email, password: password });
-      toast.success("Logged In successfully")
-      handleClose();
+      const response = await UserManagementService.login({ userEmail: email, password: password });
+        if(response.success)
+          {
+            toast.success("Logged In successfully")
+            console.log("Response.data",response.data);
+            dispatch(setUserDetails(response.data));
+            navigate("/userprofile");
+            handleClose();
+          }
     } catch (error) {
       toast.error(error.response.data.error);
     }
@@ -126,7 +138,6 @@ function LoginPopup() {
           </div>
         </div>
       )}
-      <ToastContainer />
     </>
   );
 }

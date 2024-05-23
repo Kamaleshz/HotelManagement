@@ -70,8 +70,6 @@ namespace UserManagement.Repository.CommandRepository
                     existingUsers.FirstName = user.FirstName ?? existingUsers.FirstName;
                     existingUsers.LastName = user.LastName ?? existingUsers.LastName;
                     existingUsers.UserEmail = user.UserEmail ?? existingUsers.UserEmail;
-                    existingUsers.UserPassword = user.UserPassword ?? existingUsers.UserPassword;
-                    existingUsers.HashKey = user.HashKey ?? existingUsers.HashKey;
                     existingUsers.UserPhoneNumber = user.UserPhoneNumber ?? existingUsers.UserPhoneNumber;
                     existingUsers.UserRole = user.UserRole ?? existingUsers.UserRole;
                     existingUsers.IsActive = user.IsActive ?? existingUsers.IsActive;
