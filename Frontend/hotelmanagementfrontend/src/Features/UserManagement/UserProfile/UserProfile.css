@@ -1,6 +1,6 @@
 .container {
     max-width: 600px;
-    margin: 100px auto; /* Center the container vertically and horizontally */
+    margin: 100px auto;
     padding: 20px;
     background-color: #fff;
     border-radius: 8px;
@@ -28,21 +28,35 @@
   }
   
   .userprofile-btn {
+    margin-top: 10px;
     display: block;
     width: 100%;
     padding: 10px;
     font-size: 16px;
     text-align: center;
-    border: none;
     border-radius: 4px;
+    border-width: 1px;
+    border-color: black;
     cursor: pointer;
-    background-color: #007bff;
-    color: #fff;
+    color: black;
   }
   
   .save-btn:disabled {
     background-color: #6c757d;
     cursor: not-allowed;
+  }
+
+  .edit-buttons {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .edit-buttons .userprofile-btn {
+    width: 48%;
+  }
+
+  #userprofile-edit {
+    font-size: 14px;
   }
   
   @media (max-width: 576px) {

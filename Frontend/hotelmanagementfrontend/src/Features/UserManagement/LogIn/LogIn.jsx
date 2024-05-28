@@ -3,62 +3,53 @@ import './Login.css';
 import UserManagementService from '../../../Services/UserManagementApiCalls';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import {useDispatch} from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setUserDetails } from '../../State/UserDetails.actions';
+import { regExp } from '../Shared/RegExp';
 
 function LoginPopup() {
   const [show, setShow] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [emailValid, setEmailValid] = useState(false);
-  const [passwordValid, setPasswordValid] = useState(false);
-  const [emailTouched, setEmailTouched] = useState(false);
-  const [passwordTouched, setPasswordTouched] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
 
-  const handleEmailChange = (e) => {
-    const newEmail = e.target.value;
-    setEmail(newEmail);
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z]+\.[a-zA-Z]{2,}$/;
-    const isValidFormat = emailRegex.test(newEmail);
-    setEmailValid(isValidFormat);
+  const [formData, setFormData] = useState({
+    email:'',
+    password:''
+  })
+
+  const [validity, setValidity] = useState({
+    email: false,
+    password: false
+  })
+
+  const [touched, setTouched] = useState({
+    email: false,
+    password: false
+  })
+
+  const regexes = regExp();
+
+  const validate = {
+    email: (email) => regexes.EMAIL_REGEX.test(email),
+    password: (password) => !!password
   };
 
-  const handleEmailBlur = () => {
-    setEmailTouched(true);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData ((prevState) => ({ ...prevState, [name]: value }));
+    setValidity ((prevState) => ({ ...prevState, [name]: validate[name](value) })); 
   };
 
-  const handlePasswordBlur = () => {
-    setPasswordTouched(true);
-  }
-
-  const handlePasswordChange = (e) => {
-    const newPassword = e.target.value;
-    setPassword(newPassword);
-    setPasswordValid(newPassword.length > 0);
-  };
+  const handleBlur = (e) => {
+    const { name }  = e.target;
+    setTouched((prevState) => ({...prevState, [name]: true }));
+  };  
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   }
 
-  const login = async () => {
-    try {
-      const response = await UserManagementService.login({ userEmail: email, password: password });
-        if(response.success)
-          {
-            toast.success("Logged In successfully")
-            console.log("Response.data",response.data);
-            dispatch(setUserDetails(response.data));
-            navigate("/userprofile");
-            handleClose();
-          }
-    } catch (error) {
-      toast.error(error.response.data.error);
-    }
-  };
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleClose = () => {
     setShow(false);
@@ -68,7 +59,22 @@ function LoginPopup() {
     setShow(true);
   };
 
-  const isFormValid = emailValid && passwordValid;
+  const login = async () => {
+    try {
+      const response = await UserManagementService.login({ userEmail: formData.email, password: formData.password });
+        if(response.success)
+          {
+            toast.success("Logged In successfully")
+            dispatch(setUserDetails(response.data));
+            navigate("/userprofile");
+            handleClose();
+          }
+    } catch (error) {
+      toast.error(error.response.data.error);
+    }
+  };
+
+  const isFormValid = Object.values(validity).every(Boolean);
 
   return (
     <>
@@ -89,16 +95,16 @@ function LoginPopup() {
                     <label htmlFor="exampleInputEmail1">Email address</label>
                     <input
                       type="email"
-                      className={`form-control ${!emailValid && emailTouched ? 'is-invalid' : ''}`}
-                      id="Email1"
+                      className={`form-control ${!validity.email && touched.email ? 'is-invalid' : ''}`}
+                      name="email"
                       aria-describedby="emailHelp"
                       placeholder="Enter email"
-                      value={email}
+                      value={formData.email}
                       maxLength={30}
-                      onChange={handleEmailChange}
-                      onBlur={handleEmailBlur}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                     />
-                    {!emailValid && emailTouched && (
+                    {!validity.email && touched.email && (
                       <small className="form-text text-danger">Please enter a valid email address.</small>
                     )}
                   </div>
@@ -108,26 +114,27 @@ function LoginPopup() {
                     <div className='login-password-input-container'>
                     <input
                       type={passwordVisible ? 'text' : 'password'}
-                      className={`form-control ${!passwordValid && passwordTouched ? 'is-invalid' : ''}`}
-                      id="Password" 
+                      className={`form-control ${!validity.password && touched.password ? 'is-invalid' : ''}`}
+                      name="password"
                       placeholder="Password"
-                      value={password}
+                      value={formData.password}
                       maxLength={15}
-                      onChange={handlePasswordChange}
-                      onBlur={handlePasswordBlur}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                     />
                     <button
                       type="button"
-                      className={`login-password-toggle-btn ${!passwordValid && passwordTouched ? 'invalid': `` }`}
+                      className={`login-password-toggle-btn ${!validity.password && touched.password ? 'invalid': `` }`}
                       onClick={togglePasswordVisibility}
                     >
               {passwordVisible ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye-fill"></i>}
             </button>
-                    { !passwordValid && passwordTouched && (
+                    { !validity.password && touched.password && (
                       <small className='form-text text-danger'>Please enter the password.</small>
                     )}
                   </div>
                   </div>
+                  <p>Don't have an account? <a href='/signup'>Sign Up</a></p>
                 </form>
               </div>
               <div className="modal-footer">

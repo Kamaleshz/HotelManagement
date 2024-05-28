@@ -151,8 +151,17 @@ namespace UserManagement.Service
 
         public async Task<string> UpdateUser(UserDTO updateUserDTO)
         {
-            var user = _mapper.Map<User>(updateUserDTO);
-            return await _commandRepository.UpdateUser(user);
+            try
+            {
+                var allUsers = await _queryRepository.GetAllUsers();
+                var emailCkeck = allUsers.FirstOrDefault(u => u.UserEmail == updateUserDTO.UserEmail && u.UserId != updateUserDTO.UserId && u.IsActive == true);
+
+                if (emailCkeck != null)
+                    throw new Exception("Email already exist.");
+                var user = _mapper.Map<User>(updateUserDTO);
+                return await _commandRepository.UpdateUser(user);
+            }
+            catch(Exception ex) { throw new Exception(ex.Message); }
         }
     }
 }

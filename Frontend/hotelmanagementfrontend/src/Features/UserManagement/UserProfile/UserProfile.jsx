@@ -3,12 +3,11 @@ import './UserProfile.css';
 import UserManagementService from '../../../Services/UserManagementApiCalls';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
-
-const EMAIL_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z]+\.[a-zA-Z]{2,}$/;
-const PHONE_REGEX = /^\d{10}$/;
+import { regExp } from '../Shared/RegExp';
 
 function UserProfile() {
   const userData = useSelector(state => state.userDetails);
+
   const [userDetails, setUserDetails] = useState({
     userId: '',
     firstName: '',
@@ -42,41 +41,41 @@ function UserProfile() {
     });
   }, [userData]);
 
+  const regexep = regExp();
+
   const validate = {
     firstName: (name) => name.length > 0,
     lastName: (name) => name.length > 0,
-    userEmail: (email) => EMAIL_REGEX.test(email),
-    userPhoneNumber: (number) => PHONE_REGEX.test(number)
+    userEmail: (email) => regexep.EMAIL_REGEX.test(email),
+    userPhoneNumber: (number) => regexep.PHONE_REGEX.test(number)
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setUserDetails(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-    setValidity(prevState => ({
-      ...prevState,
-      [name]: validate[name](value)
-    }));
+    setUserDetails(prevState => ({ ...prevState, [name]: value }));
+    setValidity(prevState => ({ ...prevState, [name]: validate[name](value) }));
   };
 
   const handleBlur = (e) => {
     const { name } = e.target;
-    setTouched(prevState => ({
-      ...prevState,
-      [name]: true
-    }));
+    setTouched(prevState => ({ ...prevState, [name]: true }));
   };
 
   const handleEditClick = () => {
     setEditMode(true);
   };
 
+  const initialState = {
+    userId: userData.userId,
+    firstName: userData.firstName,
+    lastName: userData.lastName,
+    userEmail: userData.userEmail,
+    userPhoneNumber: userData.userPhoneNumber
+  }
+
   const handleSaveClick = async () => {
-    const allFieldsValid = Object.values(validity).every(Boolean);
-    if (!allFieldsValid) {
-      toast.error("Please fix the validation errors before saving.");
+    if(JSON.stringify(userDetails) === JSON.stringify(initialState)){
+      toast.error("No changes made");
       return;
     }
     try {
@@ -84,8 +83,7 @@ function UserProfile() {
       toast.success("Details updated successfully");
       setEditMode(false);
     } catch (error) {
-      console.error('Error updating user details:', error);
-      toast.error("Failed to update details. Please try again.");
+      toast.error(error.response.data.error);
     }
   };
 
@@ -167,7 +165,9 @@ function UserProfile() {
             <small className="form-text text-danger">Please enter a valid phone number.</small>
           )}
         </div>
+        <a href='/'>Update Password</a>
         {editMode ? (
+          <div className='edit-buttons'>
           <button
             type="button"
             className="userprofile-btn save-btn"
@@ -176,9 +176,17 @@ function UserProfile() {
           >
             Save
           </button>
+          <button
+            type="button"
+            className="userprofile-btn close-btn"
+            onClick={() => setEditMode(false)}
+          >
+            Close
+        </button>
+        </div>
         ) : (
           <button type="button" className="userprofile-btn btn-primary" onClick={handleEditClick}>
-            Edit
+           <i id="userprofile-edit" className="bi bi-pen"></i> Edit
           </button>
         )}
       </form>

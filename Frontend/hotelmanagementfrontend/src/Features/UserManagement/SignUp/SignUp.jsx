@@ -3,76 +3,80 @@ import './SignUp.css';
 import UserManagementService from '../../../Services/UserManagementApiCalls';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-
-const EMAIL_REGEX = /^[a-zA-Z0-9._-]+@[a-zA-Z]+\.[a-zA-Z]{2,}$/;
-const PASSWORD_REGEX = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,15}$/;
-const PHONE_REGEX = /^\d{10}$/;
+import { useDispatch } from 'react-redux';
+import { setUserDetails } from '../../State/UserDetails.actions'; 
+import { regExp } from '../Shared/RegExp';
 
 function SignUp() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    email: '',
-    password: '',
-    phoneNumber: ''
+    userEmail: '',
+    userPassword: '',
+    userPhoneNumber: ''
   });
 
   const [validity, setValidity] = useState({
     firstName: false,
     lastName: false,
-    email: false,
-    password: false,
-    phoneNumber: false
+    userEmail: false,
+    userPassword: false,
+    userPhoneNumber: false
   });
 
   const [touched, setTouched] = useState({
     firstName: false,
     lastName: false,
-    email: false,
-    password: false,
-    phoneNumber: false
+    userEmail: false,
+    userPassword: false,
+    userPhoneNumber: false
   });
 
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const navigate = useNavigate();
-
+  
+  const regexp = regExp();
+  
   const validate = {
     firstName: (name) => name.length > 0,
     lastName: (name) => name.length > 0,
-    email: (email) => EMAIL_REGEX.test(email),
-    password: (password) => PASSWORD_REGEX.test(password),
-    phoneNumber: (number) => PHONE_REGEX.test(number)
+    userEmail: (email) => regexp.EMAIL_REGEX.test(email),
+    userPassword: (password) => regexp.PASSWORD_REGEX.test(password),
+    userPhoneNumber: (number) => regexp.PHONE_REGEX.test(number)
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setValidity((prev) => ({ ...prev, [name]: validate[name](value) }));
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
+    setValidity((prevState) => ({ ...prevState, [name]: validate[name](value) }));
   };
 
   const handleBlur = (e) => {
     const { name } = e.target;
-    setTouched((prev) => ({ ...prev, [name]: true }));
+    setTouched((prevState) => ({ ...prevState, [name]: true }));
   };
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
+  
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const signIn = async () => {
     try {
-      await UserManagementService.register({
+      const responce = await UserManagementService.register({
         firstName: formData.firstName,
         lastName: formData.lastName,
-        userEmail: formData.email,
-        password: formData.password,
-        userPhoneNumber: formData.phoneNumber,
+        userEmail: formData.userEmail,
+        Password: formData.userPassword,
+        userPhoneNumber: formData.userPhoneNumber,
         userRole: 3
       });
       toast.success("Signed Up successfully");
-      navigate("/login");
+      dispatch(setUserDetails(responce.data));
+      navigate("/userprofile");
     } catch (error) {
-      toast.error(error.response?.data?.error || "Registration failed");
+      toast.error(error.response.data.error || "Registration failed");
     }
   };
 
@@ -126,16 +130,16 @@ function SignUp() {
           <label htmlFor="inputEmail">Email address</label>
           <input
             type="email"
-            className={`form-control ${!validity.email && touched.email ? 'is-invalid' : ''}`}
+            className={`form-control ${!validity.userEmail && touched.userEmail ? 'is-invalid' : ''}`}
             id="inputEmail"
-            name="email"
+            name="userEmail"
             placeholder="Enter email"
-            value={formData.email}
+            value={formData.userEmail}
             maxLength={30}
             onChange={handleChange}
             onBlur={handleBlur}
           />
-          {!validity.email && touched.email && (
+          {!validity.userEmail && touched.userEmail && (
             <small className="form-text text-danger">Please enter a valid email address.</small>
           )}
         </div>
@@ -144,24 +148,24 @@ function SignUp() {
           <div className="password-input-container">
             <input
               type={passwordVisible ? 'text' : 'password'}
-              className={`form-control ${!validity.password && touched.password ? 'is-invalid' : ''}`}
+              className={`form-control ${!validity.userPassword && touched.userPassword ? 'is-invalid' : ''}`}
               id="inputPassword"
-              name="password"
+              name="userPassword"
               placeholder="Password"
-              value={formData.password}
+              value={formData.userPassword}
               maxLength={15}
               onChange={handleChange}
               onBlur={handleBlur}
             />
             <button
               type="button"
-              className={`password-toggle-btn ${!validity.password && touched.password ? 'invalid' : ''}`}
+              className={`password-toggle-btn ${!validity.userPassword && touched.userPassword ? 'invalid' : ''}`}
               onClick={togglePasswordVisibility}
             >
               {passwordVisible ? <i className="bi bi-eye-slash"></i> : <i className="bi bi-eye-fill"></i>}
             </button>
           </div>
-          {!validity.password && touched.password && (
+          {!validity.userPassword && touched.userPassword && (
             <small className="form-text text-danger">
               Password must be between 8 and 15 characters, and contain at least one uppercase letter, one lowercase letter, one number, and one special character.
             </small>
@@ -171,19 +175,20 @@ function SignUp() {
           <label htmlFor="inputPhoneNumber">Phone Number</label>
           <input
             type="tel"
-            className={`form-control ${!validity.phoneNumber && touched.phoneNumber ? 'is-invalid' : ''}`}
+            className={`form-control ${!validity.userPhoneNumber && touched.userPhoneNumber ? 'is-invalid' : ''}`}
             id="inputPhoneNumber"
-            name="phoneNumber"
+            name="userPhoneNumber"
             placeholder="Enter phone number"
-            value={formData.phoneNumber}
+            value={formData.userPhoneNumber}
             maxLength={10}
             onChange={handleChange}
             onBlur={handleBlur}
           />
-          {!validity.phoneNumber && touched.phoneNumber && (
+          {!validity.userPhoneNumber && touched.userPhoneNumber && (
             <small className="form-text text-danger">Please enter a valid phone number.</small>
           )}
         </div>
+        <p>Already have an account? <a href='/login'>Log In</a></p>
         <button type="button" className="signin-btn" onClick={signIn} disabled={!isFormValid}>Sign In</button>
       </form>
     </div>
