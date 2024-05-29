@@ -2,14 +2,18 @@ import React, { useState, useEffect } from 'react';
 import './UserProfile.css';
 import UserManagementService from '../../../Services/UserManagementApiCalls';
 import { toast } from 'react-toastify';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { regExp } from '../Shared/RegExp';
+import ChangePasswordModal from './ChangePassword';
+import { setUserDetails } from '../../State/UserDetails.actions';
+
 
 function UserProfile() {
   const userData = useSelector(state => state.userDetails);
+  const dispatch = useDispatch();
 
-  const [userDetails, setUserDetails] = useState({
-    userId: '',
+  const [userDetails, setUsersDetails] = useState({
+    userId: userData.userId,
     firstName: '',
     lastName: '',
     userEmail: '',
@@ -31,14 +35,24 @@ function UserProfile() {
     userPhoneNumber: false
   });
 
+  const [ initialState, setInitialState] = useState({
+    userId: userData.userId,
+    firstName: userData.firstName,
+    lastName: userData.lastName,
+    userEmail: userData.userEmail,
+    userPhoneNumber: userData.userPhoneNumber
+  });
+
   useEffect(() => {
-    setUserDetails({
+    const newstate = {
       userId: userData.userId,
       firstName: userData.firstName,
       lastName: userData.lastName,
       userEmail: userData.userEmail,
       userPhoneNumber: userData.userPhoneNumber
-    });
+    };
+    setUsersDetails(newstate)
+    setInitialState(newstate)
   }, [userData]);
 
   const regexep = regExp();
@@ -52,7 +66,7 @@ function UserProfile() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setUserDetails(prevState => ({ ...prevState, [name]: value }));
+    setUsersDetails(prevState => ({ ...prevState, [name]: value }));
     setValidity(prevState => ({ ...prevState, [name]: validate[name](value) }));
   };
 
@@ -65,13 +79,7 @@ function UserProfile() {
     setEditMode(true);
   };
 
-  const initialState = {
-    userId: userData.userId,
-    firstName: userData.firstName,
-    lastName: userData.lastName,
-    userEmail: userData.userEmail,
-    userPhoneNumber: userData.userPhoneNumber
-  }
+  const [showModal, setShowModal] = useState(false);
 
   const handleSaveClick = async () => {
     if(JSON.stringify(userDetails) === JSON.stringify(initialState)){
@@ -79,8 +87,9 @@ function UserProfile() {
       return;
     }
     try {
-      await UserManagementService.update(userDetails);
-      toast.success("Details updated successfully");
+      const response = await UserManagementService.update(userDetails);
+      toast.success(response.data);
+      dispatch(setUserDetails(userDetails));
       setEditMode(false);
     } catch (error) {
       toast.error(error.response.data.error);
@@ -165,7 +174,7 @@ function UserProfile() {
             <small className="form-text text-danger">Please enter a valid phone number.</small>
           )}
         </div>
-        <a href='/'>Update Password</a>
+        <a href='#' onClick={() => setShowModal(true)}>Change Password?</a>
         {editMode ? (
           <div className='edit-buttons'>
           <button
@@ -190,6 +199,7 @@ function UserProfile() {
           </button>
         )}
       </form>
+      <ChangePasswordModal show={showModal} handleClose={() => setShowModal(false)} userId={userDetails.userId} />
     </div>
   );
 }

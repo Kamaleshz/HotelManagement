@@ -64,11 +64,11 @@ namespace UserManagement.Controllers
 
         [HttpPut]
 
-        public async Task<IActionResult> UpdatePassword(UserDTO resgisteeDTO)
+        public async Task<IActionResult> ChangePassword(UpdatePasswordDTO resgisteeDTO)
         {
             try
             {
-                var result = await _userManagementService.UpdatePassword(resgisteeDTO);
+                var result = await _userManagementService.ChangePassword(resgisteeDTO);
                 return Ok(new Response<string>(result));
             }
             catch(Exception ex)

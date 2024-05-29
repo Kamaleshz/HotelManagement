@@ -20,6 +20,11 @@ class UserManagementService {
         let responce = await this.http.put(UserManagementConstants.Update, obj);
         return responce.data;
     }
+
+    async changePassword(obj) {
+        let responce = await this.http.put(UserManagementConstants.ChangePassword, obj);
+        return responce.data;
+    }
 }
 
 export default new UserManagementService();

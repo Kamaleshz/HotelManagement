@@ -3,4 +3,5 @@ export default class UserManagementConstants{
     static Login = "/Login";
     static Register = "/Register";
     static Update = "/UpdateUserDetails";
+    static ChangePassword = "/ChangePassword";
 }

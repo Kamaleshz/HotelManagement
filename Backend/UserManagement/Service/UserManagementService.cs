@@ -73,8 +73,6 @@ namespace UserManagement.Service
 
                 for (int i = 0; i < userPass.Length; i++)
                 {
-                    if (userDTO == null)
-                        throw new Exception("User data cannot be retrieved");
                     if (userPass[i] != userDTO.UserPassword[i])
                         throw new Exception("Wrong Password");
                 }
@@ -126,22 +124,40 @@ namespace UserManagement.Service
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
 
-        public async Task<string> UpdatePassword(UserDTO updatePasswordDTO)
+        public async Task<string> ChangePassword(UpdatePasswordDTO updatePasswordDTO)
         {
             try
             {
+                if (updatePasswordDTO.OldPassword == updatePasswordDTO.NewPassword)
+                    throw new Exception("Old and new password cannot be same");
                 var user = await _queryRepository.GetUserById(updatePasswordDTO.UserId);
                 if (user != null)
                 {
-                    if(user.HashKey == null)
-                        throw new NullReferenceException("Haskey cannot be null.");
-                    if(updatePasswordDTO.Password == null)
-                        throw new NullReferenceException("Password Cannot be null");
+                    if (user.HashKey == null)
+                        throw new NullReferenceException("Haskey cannot be retrieved.");
+                    if (user.UserPassword == null)
+                        throw new NullReferenceException("Password cannot be retrieved");
+                    if (updatePasswordDTO.OldPassword == null)
+                        throw new NullReferenceException("Old Password cannot be null");
+                    if (updatePasswordDTO.NewPassword == null)
+                        throw new NullReferenceException("New Password cannot be null");
 
                     var hmac = new HMACSHA512(user.HashKey);
-                    user.UserPassword = hmac.ComputeHash(Encoding.UTF8.GetBytes(updatePasswordDTO.Password));
-                    await _commandRepository.UpdateUser(user);
+                    var inputOldPassword = hmac.ComputeHash(Encoding.UTF8.GetBytes(updatePasswordDTO.OldPassword));
 
+                    for( int j = 0; j < inputOldPassword.Length; j++)
+                    {
+                        if (inputOldPassword[j] != user.UserPassword[j])
+                            throw new Exception("Wrong old password");
+                    }
+
+                    var newhmac = new HMACSHA512();
+                    var inputNewPassword = newhmac.ComputeHash(Encoding.UTF8.GetBytes(updatePasswordDTO.NewPassword));
+
+                    user.HashKey = newhmac.Key;
+                    user.UserPassword = inputNewPassword;
+
+                    await _commandRepository.UpdateUser(user);
                     return "Password Updated Successfully";
                 }
                 throw new NullReferenceException("User not Found. Cannot update the Password");
